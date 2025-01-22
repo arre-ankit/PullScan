@@ -1,5 +1,5 @@
 {
-  "name": "PullScan",
+  "name": "pullscan",
   "private": true,
   "scripts": {
     "build": "turbo build",
