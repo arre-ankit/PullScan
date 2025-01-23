@@ -1,7 +1,7 @@
-import {Router} from "express"
+import { Router } from "express";
 
 const router = Router();
 
-router.post("/signup")
+router.post("/create")
 
-export const userRouter = router;
+export const userRouter:Router = router;

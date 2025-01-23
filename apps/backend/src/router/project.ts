@@ -4,4 +4,4 @@ const router = Router();
 
 router.post("/create")
 
-export const repoRouter:Router = router;
+export const projectRouter:Router = router;
