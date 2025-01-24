@@ -19,9 +19,89 @@ model User {
   email     String   @unique
   name      String?
   auth_type AuthType
+
+  UserToProject UserToProject[]
+
+  Question Question[]
 }
 
 enum AuthType {
   Google
   Github
 }
+
+model Project {
+    id String @id @default(uuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    name String
+    githubUrl String
+
+    deletedAt DateTime?
+    userToProject UserToProject[]
+    commits  Commit[]
+    sourceCodeEmbeddings    SourceCodeEmbedding[]
+    savedQuestion Question[]
+}
+
+model UserToProject {
+    id String @id @default(uuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    userId String
+    projectId String
+
+    user User @relation(fields: [userId],references: [id])
+    savedproject Project @relation(fields: [projectId],references: [id])
+
+    @@unique([userId,projectId])
+}
+
+model Question {
+    id String @id @default(uuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    question    String
+    answer      String
+
+    filesReferences Json?
+
+    projectId String
+    project   Project @relation(fields: [projectId],references: [id])
+
+    userId String
+    user   User @relation(fields: [userId],references: [id])
+
+}
+
+model Commit {
+    id String @id @default(uuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    projectId String
+    project Project @relation(fields: [projectId],references: [id])
+    
+    commitMessage String
+    commitHash String
+    commitAuthorName String
+    commitAuthorAvtar String
+    commitDate DateTime
+    //
+    summary String
+ }
+
+ model SourceCodeEmbedding {
+    id String @id @default(uuid())
+
+    summaryEmbedding Float[]
+    sourceCode       String
+    fileName         String
+    summary          String
+
+    projectId String
+    project Project @relation(fields: [projectId],references: [id])
+ }
