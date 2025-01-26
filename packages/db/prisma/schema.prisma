@@ -15,14 +15,14 @@ datasource db {
 
 
 model User {
-  id        String      @id @default(uuid())
-  email     String   @unique
-  name      String?
-  auth_type AuthType
+  id                String      @id @default(uuid())
+  email             String      @unique
+  name              String?
+  auth_type         AuthType
 
-  UserToProject UserToProject[]
+  UserToProject     UserToProject[]
 
-  Question Question[]
+  Question          Question[]
 }
 
 enum AuthType {
@@ -31,77 +31,96 @@ enum AuthType {
 }
 
 model Project {
-    id String @id @default(uuid())
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+    id                          String @id @default(uuid())
+    createdAt                   DateTime @default(now())
+    updatedAt                   DateTime @updatedAt
 
-    name String
-    githubUrl String
+    name                        String
+    githubUrl                   String
 
-    deletedAt DateTime?
-    userToProject UserToProject[]
-    commits  Commit[]
-    sourceCodeEmbeddings    SourceCodeEmbedding[]
-    savedQuestion Question[]
+    deletedAt                   DateTime?
+    userToProject               UserToProject[]
+    commits                     Commit[]
+    sourceCodeEmbeddings        SourceCodeEmbedding[]
+    savedQuestion               Question[]
+    pullrequests                PR[]
 }
 
 model UserToProject {
-    id String @id @default(uuid())
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+    id              String    @id @default(uuid())
+    createdAt       DateTime  @default(now())
+    updatedAt       DateTime  @updatedAt
 
-    userId String
-    projectId String
+    userId          String
+    projectId       String
 
-    user User @relation(fields: [userId],references: [id])
-    savedproject Project @relation(fields: [projectId],references: [id])
+    user            User      @relation(fields: [userId],references: [id])
+    savedproject    Project   @relation(fields: [projectId],references: [id])
 
     @@unique([userId,projectId])
 }
 
 model Question {
-    id String @id @default(uuid())
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+    id                  String   @id @default(uuid())
+    createdAt           DateTime @default(now())
+    updatedAt           DateTime @updatedAt
 
-    question    String
-    answer      String
+    question            String
+    answer              String
 
-    filesReferences Json?
+    filesReferences     Json?
 
-    projectId String
-    project   Project @relation(fields: [projectId],references: [id])
+    projectId           String
+    project             Project   @relation(fields: [projectId],references: [id])
 
-    userId String
-    user   User @relation(fields: [userId],references: [id])
+    userId              String
+    user                User      @relation(fields: [userId],references: [id])
 
 }
 
 model Commit {
-    id String @id @default(uuid())
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+    id                  String   @id @default(uuid())
+    createdAt           DateTime @default(now())
+    updatedAt           DateTime @updatedAt
 
-    projectId String
-    project Project @relation(fields: [projectId],references: [id])
+    projectId           String
+    project             Project   @relation(fields: [projectId],references: [id])
     
-    commitMessage String
-    commitHash String
-    commitAuthorName String
-    commitAuthorAvtar String
-    commitDate DateTime
+    commitMessage       String
+    commitHash          String
+    commitAuthorName    String
+    commitAuthorAvtar   String
+    commitDate          DateTime
     //
-    summary String
+    summary             String
+ }
+
+  model PR {
+    id                  String   @id @default(uuid())
+    createdAt           DateTime @default(now())
+    updatedAt           DateTime @updatedAt
+
+    projectId           String
+    project             Project  @relation(fields: [projectId],references: [id])
+    
+    pullReqTitle        String
+    pullReqMessage      String
+    pullReqHash         String
+    pullReqAuthorName   String
+    pullReqAuthorAvtar  String
+    pullReqDate         DateTime
+
+    summary             String
  }
 
  model SourceCodeEmbedding {
-    id String @id @default(uuid())
+    id                  String  @id @default(uuid())
 
-    summaryEmbedding Float[]
-    sourceCode       String
-    fileName         String
-    summary          String
+    summaryEmbedding    Float[]
+    sourceCode          String
+    fileName            String
+    summary             String
 
-    projectId String
-    project Project @relation(fields: [projectId],references: [id])
+    projectId           String
+    project             Project @relation(fields: [projectId],references: [id])
  }
