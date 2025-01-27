@@ -90,7 +90,7 @@ async function summarizeCommit(githubUrl: string, commitHash: string, commitMess
     return await aisummariseCommit(data,commitMessage) || ""
 }
 
-await summarizeCommit("https://github.com/n8n-io/n8n","d48cc36061e1069dd92edc65c0c1fbc32cf89489","feat(editor): Remove bug reporting button from new canvas (no-changelog) (#12831)").then((summary)=> {console.log(summary)})
+// await summarizeCommit("https://github.com/n8n-io/n8n","d48cc36061e1069dd92edc65c0c1fbc32cf89489","feat(editor): Remove bug reporting button from new canvas (no-changelog) (#12831)").then((summary)=> {console.log(summary)})
 
 export async function fetchProjectGithubUrl(projectId:string){
     const project = await db.project.findUnique({

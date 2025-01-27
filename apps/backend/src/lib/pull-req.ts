@@ -1,5 +1,4 @@
 import db from "@repo/db/client";
-import axios  from "axios"
 import { aisummarisePR } from "./gemni"
 import { octokit } from "./octakit";
 import { fetchProjectGithubUrl } from "./commit";
@@ -13,29 +12,30 @@ export const pollPullRequests = async (projectId: string) =>{
     const summaryResponses = await Promise.allSettled(unprocessedPRs.map((pr:any) => {
         return summarizePR(githubUrl,pr.pullReqHashes,pr.number,pr.pullReqTitle, pr.pullReqMessage)
     }))
-    // const summaries = summaryResponses.map((response) =>{
-    //     if(response.status === 'fulfilled'){
-    //         return response.value as string
-    //     }
-    //     return ""
-    // })
+    const summaries = summaryResponses.map((response) =>{
+        if(response.status === 'fulfilled'){
+            return response.value as string
+        }
+        return ""
+    })
 
-    // const commits = await db.commit.createMany({
-    //     data: summaries.map((summary,index) => {
-    //             console.log(`processing commit ${index}`)
-    //             return {
-    //                 projectId: projectId,
-    //                 commitHash: unprocessedCommits[index].commitHash,
-    //                 commitMessage: unprocessedCommits[index]!.commitMessage,
-    //                 commitAuthorName: unprocessedCommits[index].commitAuthorName,
-    //                 commitAuthorAvtar: unprocessedCommits[index].commitAuthorAvatar,
-    //                 commitDate: unprocessedCommits[index].commitDate,
-    //                 summary
-    //             }
-    //     })
-        
-    // })
-    // return commits
+    const prs = await db.pr.createMany({
+        data: summaries.map((summary,index) => {
+                console.log(`processing pr ${index}`)
+                return {
+                    projectId: projectId,
+                    pullReqHash: unprocessedPRs[index]!.pullReqHash,
+                    pullReqTitle: unprocessedPRs[index]!.pullReqTitle,
+                    pullReqMessage: unprocessedPRs[index]!.pullReqMessage,
+                    pullReqAuthorName: unprocessedPRs[index]!.pullReqAuthorName,
+                    pullReqAuthorAvtar: unprocessedPRs[index]!.pullReqAuthorAvatar,
+                    pullReqDate: unprocessedPRs[index].pullReqDate,
+                    summary
+    
+                }
+        })
+    })
+    return prs
 }
 
 
@@ -107,7 +107,6 @@ async function summarizePR(githubUrl: string, pullReqHashes: string, pr_number:n
         });
     }
 
-    console.log(codes)
     return await aisummarisePR(codes,pullReqMessage,pullReqTitle) || ""
     
 }
