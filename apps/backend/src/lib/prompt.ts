@@ -1,8 +1,7 @@
 export const code_review_prompt = ({
-    filename, patch, title, description, short_summary
+    file_diff, title, description, short_summary
 }: {
-    filename: string
-    patch: string
+    file_diff: string
     title: string
     description: string
     short_summary: string
@@ -94,9 +93,9 @@ There's a syntax error in the add function.
 LGTM!
 ---
 
-## Changes made to \`${filename}\` for your review
+## Changes made to \`$filename\` for your review
 
-${patch}`
+${file_diff}`
 
 return code_prompt
 
@@ -110,7 +109,7 @@ export const summary_prompt = ({
     description:string, 
     file_diff:string
 }) => {
-    const sum_prompt =
+    const pr_short_summary_prompt =
     `## GitHub PR Title
 
         \`${title}\` 
@@ -136,18 +135,105 @@ export const summary_prompt = ({
         behavior of the code.
         `
 
-    return sum_prompt
+    return pr_short_summary_prompt
 }
 
 
-export const main_summary_prompt =`Your task is to provide a concise summary of the changes. This 
-summary will be used as a prompt while reviewing each file and must be very clear for 
-the AI bot to understand. 
 
-Instructions:
+export const main_summary_prompt = ({
+    title, description, file_diff,suggegested_changes
+}:{
+   title:string,
+   description?:string, 
+   file_diff:string,
+   suggegested_changes?: string
+}) => {
+   const pr_main_summary_prompt =
+   `## GitHub PR Title
 
-- Focus on summarizing only the changes in the PR and stick to the facts.
-- Do not provide any instructions to the bot on how to perform the review.
-- Do not mention that files need a through review or caution about potential issues.
-- Do not mention that these changes affect the logic or functionality of the code.
-- The summary should not exceed 500 words.`
+       \`${title}\` 
+
+       ## Description
+
+       \`\`\`
+       ${description}
+       \`\`\`
+
+       ## Diff
+
+       \`\`\`diff
+       ${file_diff}
+       \`\`\`
+
+
+       ## Suggested Chenges 
+       \`\`\`
+       ${suggegested_changes}
+       \`\`\`
+
+
+
+       ## Instructions
+
+       Your task is to provide a concise summary of the changes. This 
+        summary will be used as a prompt while reviewing each file and must be very clear for 
+        the AI bot to understand. 
+
+        Instructions:
+
+        - Focus on summarizing only the changes in the PR and stick to the facts.
+        - In the ${suggegested_changes} if their is LGTM! ignore it 
+        - If in ${suggegested_changes} their is some change include it in the summary
+        - Add code blocks of the changes you find from $fill_diff and give explanation their
+        - The summary should not exceed 600 words.
+       `
+
+   return pr_main_summary_prompt
+}
+
+export const commit_main_summary_prompt = ({
+    title, file_diff
+}:{
+   title:string,
+   file_diff:string,
+}) => {
+   const commit_main_sum_prompt =
+   `## GitHub Commit Title
+
+       \`${title}\` 
+
+       ## Diff
+
+       \`\`\`diff
+       ${file_diff}
+       \`\`\`
+
+
+       ## Instructions
+
+       Your task is to provide a concise summary of the changes. This 
+        summary must be very clear to understand. 
+
+        Instructions:
+
+        - Focus on summarizing only the changes in the commit and stick to the facts.
+        - Add very small code blocks and line number of the changes you find from $fill_diff 
+        - Never provide the entire code
+        - Just give small snippits of code and line numbers
+        - Try to explain more in summary below the snippit
+        - Don't explain each line of code one by one give enitre summary
+
+        - 'Never give code like these 
+            WorkflowCanvas.vue** Line 23 shows the removal of the showBugReportingButton prop.
+        diff
+        --- a/packages/editor-ui/src/components/canvas/WorkflowCanvas.vue
+        +++ b/packages/editor-ui/src/components/canvas/WorkflowCanvas.vue
+        @@ -23,7 +23,6 @@'
+
+        - If giving code just give from +++ part
+        - The summary should not exceed 600 words.
+       `
+
+   return commit_main_sum_prompt
+}
+

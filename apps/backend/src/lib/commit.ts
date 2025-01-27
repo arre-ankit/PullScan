@@ -3,6 +3,37 @@ import axios  from "axios"
 import { aisummariseCommit } from "./gemni"
 import {octokit} from "./octakit"
 
+export const pollCommits = async (projectId: string) =>{
+    const {project,githubUrl} = await fetchProjectGithubUrl(projectId);
+    const commitHashes = await getCommitHashes(githubUrl)
+    const unprocessedCommits = await filterUnprocessedCommits(projectId, commitHashes)
+    const summaryResponses = await Promise.allSettled(unprocessedCommits.map((commit:any) => {
+        return summarizeCommit(githubUrl,commit.commitHash,commit.commitMessage)
+    }))
+    const summaries = summaryResponses.map((response) =>{
+        if(response.status === 'fulfilled'){
+            return response.value as string
+        }
+        return ""
+    })
+
+    const commits = await db.commit.createMany({
+        data: summaries.map((summary,index) => {
+                console.log(`processing commit ${index}`)
+                return {
+                    projectId: projectId,
+                    commitHash: unprocessedCommits[index].commitHash,
+                    commitMessage: unprocessedCommits[index]!.commitMessage,
+                    commitAuthorName: unprocessedCommits[index].commitAuthorName,
+                    commitAuthorAvtar: unprocessedCommits[index].commitAuthorAvatar,
+                    commitDate: unprocessedCommits[index].commitDate,
+                    summary
+                }
+        })
+        
+    })
+    return commits
+}
 
 export const getCommitHashes = async (githubUrl: string): Promise<any> => {
     const [owner, repo] = githubUrl.split("/").slice(-2);
@@ -39,39 +70,6 @@ export const getCommitHashes = async (githubUrl: string): Promise<any> => {
     }
 };
 
-
-export const pollCommits = async (projectId: string) =>{
-    const {project,githubUrl} = await fetchProjectGithubUrl(projectId);
-    const commitHashes = await getCommitHashes(githubUrl)
-    const unprocessedCommits = await filterUnprocessedCommits(projectId, commitHashes)
-    const summaryResponses = await Promise.allSettled(unprocessedCommits.map((commit:any) => {
-        return summarizeCommit(githubUrl,commit.commitHash)
-    }))
-    const summaries = summaryResponses.map((response) =>{
-        if(response.status === 'fulfilled'){
-            return response.value as string
-        }
-        return ""
-    })
-
-    const commits = await db.commit.createMany({
-        data: summaries.map((summary,index) => {
-                console.log(`processing commit ${index}`)
-                return {
-                    projectId: projectId,
-                    commitHash: unprocessedCommits[index].commitHash,
-                    commitMessage: unprocessedCommits[index]!.commitMessage,
-                    commitAuthorName: unprocessedCommits[index].commitAuthorName,
-                    commitAuthorAvtar: unprocessedCommits[index].commitAuthorAvatar,
-                    commitDate: unprocessedCommits[index].commitDate,
-                    summary
-                }
-        })
-        
-    })
-    return commits
-}
-
 async function filterUnprocessedCommits(projectId:string, commitHashes:any){
     const processedCommit = await db.commit.findMany({
         where:{projectId}
@@ -82,17 +80,19 @@ async function filterUnprocessedCommits(projectId:string, commitHashes:any){
 }
 
 
-async function summarizeCommit(githubUrl: string, commitHash: string) {
+async function summarizeCommit(githubUrl: string, commitHash: string, commitMessage:string) {
     // get the diff pass the diff in AI
     const {data} = await axios.get(`${githubUrl}/commit/${commitHash}.diff`,{
         headers: {
             Accept: 'application/vnd.github.v3.diff'
         }
     })
-    return await aisummariseCommit(data) || ""
+    return await aisummariseCommit(data,commitMessage) || ""
 }
 
-async function fetchProjectGithubUrl(projectId:string){
+await summarizeCommit("https://github.com/n8n-io/n8n","d48cc36061e1069dd92edc65c0c1fbc32cf89489","feat(editor): Remove bug reporting button from new canvas (no-changelog) (#12831)").then((summary)=> {console.log(summary)})
+
+export async function fetchProjectGithubUrl(projectId:string){
     const project = await db.project.findUnique({
         where:{
             id: projectId
