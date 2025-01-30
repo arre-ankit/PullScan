@@ -1,7 +1,7 @@
 import { GithubRepoLoader } from "@langchain/community/document_loaders/web/github"
 import {Document} from "@langchain/core/documents"
 import { doc } from "prettier"
-import { aigenerateEmbedding, summarizecode } from "./gemni"
+import { aigenerateEmbedding, summarizecode } from "../gemni"
 import db from "@repo/db/client";
 
 export const loadGithubRepo = async (githubUrl: string , githubToken?:string) => {

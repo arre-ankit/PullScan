@@ -1,6 +1,6 @@
 import db from "@repo/db/client";
 import axios  from "axios"
-import { aisummariseCommit } from "./gemni"
+import { aisummariseCommit } from "../gemni"
 import {octokit} from "./octakit"
 
 export const pollCommits = async (projectId: string) =>{
@@ -75,7 +75,7 @@ async function filterUnprocessedCommits(projectId:string, commitHashes:any){
         where:{projectId}
     })
 
-    const unprocessedCommits = commitHashes.filter((commit:any)=> !processedCommit.some((processedCommit) => processedCommit.commitHash === commit.commitHash))
+    const unprocessedCommits = commitHashes.filter((commit:any)=> !processedCommit.some((processedCommit:any) => processedCommit.commitHash === commit.commitHash))
     return unprocessedCommits
 }
 

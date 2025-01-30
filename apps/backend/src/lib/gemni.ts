@@ -1,6 +1,6 @@
 import {GoogleGenerativeAI} from "@google/generative-ai"
 import { Document } from "@langchain/core/documents"
-import { code_review_prompt, commit_main_summary_prompt, main_summary_prompt, summary_prompt } from "./prompt";
+import { code_review_prompt, commit_main_summary_prompt, main_summary_prompt, summary_prompt } from "./prompt.js"
 
 
 export interface CodeChange {

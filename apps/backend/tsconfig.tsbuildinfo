@@ -1,0 +1,1 @@
+{"root":["./src/index.ts","./src/middleware.ts","./src/lib/gemni.ts","./src/lib/prompt.ts","./src/lib/github/commit.ts","./src/lib/github/github-loader.ts","./src/lib/github/octakit.ts","./src/lib/github/pull-req.ts","./src/router/project.ts"],"version":"5.8.0-dev.20250130"}

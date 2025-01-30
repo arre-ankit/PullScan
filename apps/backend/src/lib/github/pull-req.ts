@@ -1,8 +1,8 @@
 import db from "@repo/db/client";
-import { aisummarisePR } from "./gemni"
+import { aisummarisePR } from "../gemni"
 import { octokit } from "./octakit";
 import { fetchProjectGithubUrl } from "./commit";
-import { CodeChange } from "./gemni";
+import { CodeChange } from "../gemni";
 
 
 export const pollPullRequests = async (projectId: string) =>{
@@ -111,4 +111,8 @@ async function summarizePR(githubUrl: string, pullReqHashes: string, pr_number:n
     
 }
 
-await summarizePR("https://github.com/n8n-io/n8n","26e245a546d1b0dd386a95047eeb736572f85def",12816,"refactor(core): Move all execution lifecycle telemetry events to lifecycle hooks (no-changelog)","## Summary\r\n\r\nThis PR moves telemetry events out of workflow-execute-additional-data and WorkflowRunner, and into execution lifecycle hooks, to make these temetry hooks consistent across various modes.\r\n\r\n## Review / Merge checklist\r\n\r\n- [x] PR title and summary are descriptive. ([conventions](../blob/master/.github/pull_request_title_conventions.md)) <!--\r\n   **Remember, the title automatically goes into the changelog.\r\n   Use `(no-changelog)` otherwise.**\r\n-->\r\n- [ ] [Docs updated](https://github.com/n8n-io/n8n-docs) or follow-up ticket created.\r\n- [x] Tests included. <!--\r\n   A bug is not considered fixed, unless a test is added to prevent it from happening again.\r\n   A feature is not complete without tests.\r\n-->\r\n- [ ] PR Labeled with `release/backport` (if the PR is an urgent fix that needs to be backported)\r\n").then((summary)=> {console.log(summary)})
+async function main(){
+    await summarizePR("https://github.com/n8n-io/n8n","26e245a546d1b0dd386a95047eeb736572f85def",12816,"refactor(core): Move all execution lifecycle telemetry events to lifecycle hooks (no-changelog)","## Summary\r\n\r\nThis PR moves telemetry events out of workflow-execute-additional-data and WorkflowRunner, and into execution lifecycle hooks, to make these temetry hooks consistent across various modes.\r\n\r\n## Review / Merge checklist\r\n\r\n- [x] PR title and summary are descriptive. ([conventions](../blob/master/.github/pull_request_title_conventions.md)) <!--\r\n   **Remember, the title automatically goes into the changelog.\r\n   Use `(no-changelog)` otherwise.**\r\n-->\r\n- [ ] [Docs updated](https://github.com/n8n-io/n8n-docs) or follow-up ticket created.\r\n- [x] Tests included. <!--\r\n   A bug is not considered fixed, unless a test is added to prevent it from happening again.\r\n   A feature is not complete without tests.\r\n-->\r\n- [ ] PR Labeled with `release/backport` (if the PR is an urgent fix that needs to be backported)\r\n").then((summary)=> {console.log(summary)})
+}
+
+main()
