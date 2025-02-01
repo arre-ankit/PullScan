@@ -1,5 +1,5 @@
 import GoogleProvider from "next-auth/providers/google";
-import db from "@repo/db/client";
+import {client} from "@repo/db/client";
 
 export const authOptions = {
     providers: [
@@ -12,18 +12,19 @@ export const authOptions = {
       async signIn({ user, account }: {
         user: {
           email: string;
-          name: string
+          name: string;
         },
         account: {
           provider: "google" | "github"
-        }
-      }) {
+        },
+      },
+    ) {
         console.log("hi signin")
         if (!user || !user.email) {
           return false;
         }
 
-        await db.user.upsert({
+        await client.user.upsert({
           select: {
             id: true
           },
@@ -42,7 +43,7 @@ export const authOptions = {
         });
 
         return true;
-      }
+      },
     },
     secret: process.env.NEXTAUTH_SECRET || "secret"
   }
