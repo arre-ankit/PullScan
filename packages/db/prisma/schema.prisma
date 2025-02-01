@@ -25,6 +25,7 @@ model User {
   Question          Question[]
 }
 
+
 enum AuthType {
   Google
   Github
@@ -43,7 +44,7 @@ model Project {
     commits                     Commit[]
     sourceCodeEmbeddings        SourceCodeEmbedding[]
     savedQuestion               Question[]
-    pullrequests                PR[]
+    pullrequests                Pr[]
 }
 
 model UserToProject {
@@ -95,7 +96,7 @@ model Commit {
     summary             String
  }
 
-  model PR {
+  model Pr {
     id                  String   @id @default(uuid())
     createdAt           DateTime @default(now())
     updatedAt           DateTime @updatedAt
