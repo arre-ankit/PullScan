@@ -1,6 +1,6 @@
-import db from "@repo/db/client";
+import { client } from "@repo/db/client"; 
 import { aisummarisePR } from "../gemni"
-import { octokit } from "./octakit";
+import { octokit } from "./octakit.js";
 import { fetchProjectGithubUrl } from "./commit";
 import { CodeChange } from "../gemni";
 
@@ -19,7 +19,7 @@ export const pollPullRequests = async (projectId: string) =>{
         return ""
     })
 
-    const prs = await db.pr.createMany({
+    const prs = await client.pr.createMany({
         data: summaries.map((summary,index) => {
                 console.log(`processing pr ${index}`)
                 return {
@@ -76,7 +76,7 @@ export const getPullRequest = async (githubUrl: string) => {
 
 
 async function filterUnprocessedPRs(projectId:string, pullReqHashes:any){
-        const processedPr = await db.pr.findMany({
+        const processedPr = await client.pr.findMany({
             where:{projectId}
         })
     

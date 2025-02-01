@@ -2,7 +2,7 @@ import { GithubRepoLoader } from "@langchain/community/document_loaders/web/gith
 import {Document} from "@langchain/core/documents"
 import { doc } from "prettier"
 import { aigenerateEmbedding, summarizecode } from "../gemni"
-import db from "@repo/db/client";
+import { client } from "@repo/db/client"; 
 
 export const loadGithubRepo = async (githubUrl: string , githubToken?:string) => {
     const loader = new GithubRepoLoader(githubUrl, {
@@ -27,7 +27,7 @@ export const indexGithubRepo = async (projectId :string, githubUrl:string, githu
         console.log(`Processing ${index} of ${allEmbeddings.length}`)
         if(!embedding) return
 
-        const sourceCodeEmbedding = await db.sourceCodeEmbedding.create({
+        const sourceCodeEmbedding = await client.sourceCodeEmbedding.create({
             data:{
                 summary: embedding.summary,
                 sourceCode: embedding.SourceCode,
@@ -37,7 +37,7 @@ export const indexGithubRepo = async (projectId :string, githubUrl:string, githu
             }
         })
 
-        await db.$executeRaw`
+        await client.$executeRaw`
         UPDATE "SourceCodeEmbedding"
         SET "summaryEmbedding" = ${embedding.embedding}::vector
         WHERE "id" = ${sourceCodeEmbedding.id}
@@ -68,3 +68,17 @@ const generateEmbeddings = async (docs: Document[]) => {
 //       branch: "main",
 //     },
 //     id: undefined,
+
+
+// import { PDFLoader } from "@langchain/community/document_loaders/fs/pdf";
+
+// const loader = new PDFLoader("src/document_loaders/sci_adv.pdf", {
+//     parsedItemSeparator: "",
+//   });
+  
+//   async function main(){
+//     const docs = await loader.load();
+//     console.log(docs)
+//   }
+
+//   main()

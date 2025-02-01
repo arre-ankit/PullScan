@@ -1,7 +1,7 @@
-import db from "@repo/db/client";
+import { client } from "@repo/db/client"; 
 import axios  from "axios"
-import { aisummariseCommit } from "../gemni"
-import {octokit} from "./octakit"
+import { aisummariseCommit } from "../gemni.js"
+import {octokit} from "./octakit.js"
 
 export const pollCommits = async (projectId: string) =>{
     const {project,githubUrl} = await fetchProjectGithubUrl(projectId);
@@ -17,7 +17,7 @@ export const pollCommits = async (projectId: string) =>{
         return ""
     })
 
-    const commits = await db.commit.createMany({
+    const commits = await client.commit.createMany({
         data: summaries.map((summary,index) => {
                 console.log(`processing commit ${index}`)
                 return {
@@ -71,7 +71,8 @@ export const getCommitHashes = async (githubUrl: string): Promise<any> => {
 };
 
 async function filterUnprocessedCommits(projectId:string, commitHashes:any){
-    const processedCommit = await db.commit.findMany({
+
+    const processedCommit = await client.commit.findMany({
         where:{projectId}
     })
 
@@ -93,7 +94,7 @@ async function summarizeCommit(githubUrl: string, commitHash: string, commitMess
 // await summarizeCommit("https://github.com/n8n-io/n8n","d48cc36061e1069dd92edc65c0c1fbc32cf89489","feat(editor): Remove bug reporting button from new canvas (no-changelog) (#12831)").then((summary)=> {console.log(summary)})
 
 export async function fetchProjectGithubUrl(projectId:string){
-    const project = await db.project.findUnique({
+    const project = await client.project.findUnique({
         where:{
             id: projectId
         },
@@ -101,6 +102,7 @@ export async function fetchProjectGithubUrl(projectId:string){
             githubUrl: true
         }
     })
+    
 
     if(!project?.githubUrl){
         throw new Error("Project has no github url")

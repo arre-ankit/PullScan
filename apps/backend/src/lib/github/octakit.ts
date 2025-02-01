@@ -1,18 +1,20 @@
-import { Octokit } from "octokit";
-import { retry } from "@octokit/plugin-retry";
-import { throttling } from "@octokit/plugin-throttling";
+const { Octokit } = require("octokit");
+const {retry} = require("@octokit/plugin-retry");
+const {throttling} = require("@octokit/plugin-throttling");
 
 const RetryAndThrottlingOctokit = Octokit.plugin(retry, throttling);
 
-export const octokit: Octokit = new RetryAndThrottlingOctokit({
+export const octokit = new RetryAndThrottlingOctokit({
   auth: process.env.GITHUB_TOKEN,
   throttle: {
+    // @ts-ignore
     onRateLimit: (retryAfter, options, _o, retryCount) => {
       console.warn(
         `Rate limit hit: ${options.method} ${options.url}. Retry after ${retryAfter} seconds (Attempt ${retryCount}).`
       );
       return retryCount <= 3; // Retry up to 3 times
     },
+    //@ts-ignore
     onSecondaryRateLimit: (retryAfter, options) => {
       console.warn(
         `Secondary rate limit hit for request ${options.method} ${options.url}. Retry after ${retryAfter} seconds.`
