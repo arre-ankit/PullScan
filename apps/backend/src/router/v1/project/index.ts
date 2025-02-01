@@ -13,17 +13,30 @@ const projectScema = z.object({
 })
 
 router.post("/createProject", async (req,res) => {
+    const zreq = projectScema.safeParse(req.body)
     const email = req.headers.authorization
-    console.log(email)
 
-    const userId = await client.user.findFirst({
+    const user = await client.user.findFirst({
         where:{
             email:email
         }
     })
 
-    console.log(userId)
-    res.send('hi')
+    const project = await client.project.create({
+        data:{
+            name: zreq.data?.name || '',
+            githubUrl: zreq.data?.githubUrl || '',
+            userToProject: {
+                create:{
+                    userId: user?.id || ''
+                }
+            }
+        }   
+    })
+
+    res.send({
+        project
+    })
 })
 
 export default router;
