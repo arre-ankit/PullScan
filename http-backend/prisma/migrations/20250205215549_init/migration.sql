@@ -4,9 +4,13 @@ CREATE TYPE "AuthType" AS ENUM ('Google', 'Github');
 -- CreateTable
 CREATE TABLE "User" (
     "id" TEXT NOT NULL,
-    "email" TEXT NOT NULL,
-    "name" TEXT,
-    "auth_type" "AuthType" NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "imageUrl" TEXT,
+    "firstName" TEXT,
+    "lastName" TEXT,
+    "emailAddress" TEXT NOT NULL,
+    "credits" INTEGER NOT NULL DEFAULT 150,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );
@@ -94,7 +98,7 @@ CREATE TABLE "SourceCodeEmbedding" (
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
+CREATE UNIQUE INDEX "User_emailAddress_key" ON "User"("emailAddress");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "UserToProject_userId_projectId_key" ON "UserToProject"("userId", "projectId");

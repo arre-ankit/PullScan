@@ -1,9 +1,17 @@
-import { Hono } from 'hono'
+import express from "express"
+import cors from "cors"
+import {z} from "zod"
+import { projectRouter } from "./router/project";
 
-const app = new Hono<{ Bindings: CloudflareBindings }>()
+const app = express();
 
-app.get('/', (c) => {
-  return c.text('Hello Hono!')
-})
+app.use(cors({
+    origin: 'http://localhost:3000',
+    credentials: true 
+}));
 
-export default app
+app.use(express.json());
+
+app.use("/v1/api/project", projectRouter)
+
+app.listen(process.env.PORT || 8080)

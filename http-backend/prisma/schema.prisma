@@ -15,14 +15,20 @@ datasource db {
 
 
 model User {
-  id                String      @id @default(uuid())
-  email             String      @unique
-  name              String?
-  auth_type         AuthType
+    id String @id @default(cuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 
-  UserToProject     UserToProject[]
+    imageUrl String?
+    firstName String?
+    lastName String?
 
-  Question          Question[]
+    emailAddress String @unique
+    
+    credits Int @default(150)
+    userToProject UserToProject[]
+
+    questionsAsked Question[]
 }
 
 
