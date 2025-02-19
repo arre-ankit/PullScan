@@ -32,11 +32,6 @@ model User {
 }
 
 
-enum AuthType {
-  Google
-  Github
-}
-
 model Project {
     id                          String @id @default(uuid())
     createdAt                   DateTime @default(now())

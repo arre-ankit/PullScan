@@ -1,6 +1,3 @@
--- CreateEnum
-CREATE TYPE "AuthType" AS ENUM ('Google', 'Github');
-
 -- CreateTable
 CREATE TABLE "User" (
     "id" TEXT NOT NULL,
