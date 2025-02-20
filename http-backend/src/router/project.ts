@@ -40,8 +40,8 @@ router.post("/create", async (req,res): Promise<any> => {
     })
 
 
-    // await indexGithubRepo(project.id,zreq.data?.githubUrl || '', zreq.data?.githubToken)
-    // await pollCommits(project.id)
+    await indexGithubRepo(project.id,zreq.data?.githubUrl || '', zreq.data?.githubToken)
+    await pollCommits(project.id)
     await pollPullRequests(project.id)
 
     res.json({message: 'Success',project})
@@ -97,5 +97,48 @@ router.get("/:projectId", async (req,res): Promise<any> => {
     res.json({message: 'Success',project})
 })
 
+router.get("/:projectId/commits", async (req,res): Promise<any> => {
+    const email = req.headers.authorization
+    const user = await prismaClient.user.findUnique({
+        where:{
+            emailAddress: email
+        }
+    })
+    const projectId = req.params.projectId
+
+    if (!user?.id) {
+        return res.status(401).json({ error: "Unauthorized" });
+    }
+
+    const commits = await prismaClient.commit.findMany({
+        where:{
+            projectId:projectId
+        }
+    })
+
+    res.json({message: 'Success',commits})
+})
+
+router.get("/:projectId/prs", async (req,res): Promise<any> => {
+    const email = req.headers.authorization
+    const user = await prismaClient.user.findUnique({
+        where:{
+            emailAddress: email
+        }
+    })
+    const projectId = req.params.projectId
+
+    if (!user?.id) {
+        return res.status(401).json({ error: "Unauthorized" });
+    }
+
+    const prs = await prismaClient.pr.findMany({
+        where:{
+            projectId:projectId
+        }
+    })
+
+    res.json({message: 'Success',prs})
+})
 
 export const projectRouter = router

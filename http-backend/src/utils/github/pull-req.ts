@@ -4,7 +4,6 @@ import { octokit } from "./octakit.js";
 import { fetchProjectGithubUrl } from "./commit";
 import { CodeChange } from "../gemni";
 
-
 export const pollPullRequests = async (projectId: string) =>{
     const {project,githubUrl} = await fetchProjectGithubUrl(projectId);
     const pullReqHashes = await getPullRequest(githubUrl)
@@ -22,12 +21,10 @@ export const pollPullRequests = async (projectId: string) =>{
 
     const prs = await prismaClient.pr.createMany({
         data: summaries.map((summary, index) => {
-            console.log(`processing pr ${index}`);
             const unprocessedPR = unprocessedPRs[index]; // Get the corresponding unprocessed PR
 
             // Ensure that pullReqHash is not null
             const pullReqHash = unprocessedPR?.pullReqHash || ""; // Provide a default value if undefined or null
-            console.log(summary)
 
             return {
                 projectId: projectId,
@@ -60,7 +57,7 @@ export const getPullRequest = async (githubUrl: string) => {
 
         const sortedPulls = response.data.sort((a:any, b:any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()) as any[];
 
-        return sortedPulls.slice(0, 15).map((pr: any) => ({
+        return sortedPulls.slice(0,4).map((pr: any) => ({
             number: pr.number,
             pullReqHash: pr.merge_commit_sha as string,
             pullReqTitle: pr.title,
@@ -114,7 +111,6 @@ async function summarizePR(githubUrl: string, pullReqHashes: string, pr_number:n
     }
 
     return await aisummarisePR(codes,pullReqMessage,pullReqTitle) || ""
-    
 }
 
 // async function main(){

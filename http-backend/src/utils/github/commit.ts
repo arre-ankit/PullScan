@@ -14,7 +14,9 @@ export const pollCommits = async (projectId: string) =>{
         if(response.status === 'fulfilled'){
             return response.value as string
         }
+        else{
         return ""
+        }
     })
 
     const commits = await prismaClient.commit.createMany({
