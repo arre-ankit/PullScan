@@ -1,10 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { ArchiveX, Command, File, Inbox, Send, Trash2 } from "lucide-react"
-
-import { NavUser } from "@/components/nav-user"
-import { Label } from "@/components/ui/label"
+import { Command,GitCommitHorizontal, GitPullRequestArrow, MessageCircle } from "lucide-react"
 import {
   Sidebar,
   SidebarContent,
@@ -18,46 +15,33 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
-import { Switch } from "@/components/ui/switch"
+import { SelectProject } from "./select-project-toggle"
+import { useUser } from '@clerk/clerk-react';
+import { CommitComponent } from "./Commit"
+import Image from "next/image"
+import { PrComponent } from "./PR"
 
 // This is sample data
 const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
   navMain: [
     {
-      title: "Inbox",
-      url: "#",
-      icon: Inbox,
+      title: "Commits",
+      icon: GitCommitHorizontal ,
+      isActive: false,
+      url: 'commits'
+    },
+    {
+      title: "PRs",
+      icon: GitPullRequestArrow,
+      isActive: false,
+      url: 'prs'
+    },
+    {
+      title: "Chat",
+      icon: MessageCircle,
       isActive: true,
-    },
-    {
-      title: "Drafts",
-      url: "#",
-      icon: File,
-      isActive: false,
-    },
-    {
-      title: "Sent",
-      url: "#",
-      icon: Send,
-      isActive: false,
-    },
-    {
-      title: "Junk",
-      url: "#",
-      icon: ArchiveX,
-      isActive: false,
-    },
-    {
-      title: "Trash",
-      url: "#",
-      icon: Trash2,
-      isActive: false,
-    },
+      url: 'questions'
+    }
   ],
   mails: [
     {
@@ -141,14 +125,101 @@ const data = {
         "To celebrate our recent project success, I'd like to organize a team dinner.\nAre you available next Friday evening? Please let me know your preferences.",
     },
   ],
+  commits: [
+    {
+      commitMessage: "Add support for more LLM models (#186)",
+      commitAuthorName: "Tomaz Bratanic",
+      commitAuthorAvtar: "https://avatars.githubusercontent.com/u/19948365?v=4",
+      commitDate: "2024-11-05T07:26:39.000Z",
+      summary: "gojffdiodhf sgfdhigs iogsg m"
+    },
+    {
+      commitMessage: "Add support for more LLM models (#186)",
+      commitAuthorName: "Tomaz Bratanic",
+      commitAuthorAvtar: "https://avatars.githubusercontent.com/u/19948365?v=4",
+      commitDate: "2024-11-05T07:26:39.000Z",
+      summary: "gojffdiodhf sgfdhigs iogsg m"
+    },
+    {
+      commitMessage: "Add support for more LLM models (#186)",
+      commitAuthorName: "Tomaz Bratanic",
+      commitAuthorAvtar: "https://avatars.githubusercontent.com/u/19948365?v=4",
+      commitDate: "2024-11-05T07:26:39.000Z",
+      summary: "gojffdiodhf sgfdhigs iogsg m"
+    },
+    {
+      id:'djj',
+      commitMessage: "Add support for more LLM models (#186)",
+      commitAuthorName: "Tomaz Bratanic",
+      commitAuthorAvtar: "https://avatars.githubusercontent.com/u/19948365?v=4",
+      commitDate: "2024-11-05T07:26:39.000Z",
+      summary: "gojffdiodhf sgfdhigs iogsg m"
+    }
+  ],
+  prs: [
+    {
+      pullReqTitle: "fix: Dockerfile to build and pull images.",
+      pullReqMessage: "SO: Windows  \r\nDocker and docker compose running on WSL (Ubuntu).\r\n\r\nDocker Version: 26.1.3\r\nDocker Compose version v2.32.4\r\n\r\nThose changes fixed problems to bringing up the database and pull_model services. The other apps didn't run because these dependencies.\r\n\r\nThe order:\r\n\r\n1. docker-compose up llm\r\n2. docker-compose up database pull-model\r\n3. docker-compose up <app>",
+      pullReqAuthorName: "leonardovaleriano",
+      pullReqAuthorAvtar: "https://avatars.githubusercontent.com/u/9980129?v=4",
+      pullReqDate: "2025-01-21T13:26:59.000Z",
+      summary: "## PR Summary\n\nThis pull request refactors the `pull_model.clj` script within the Dockerfile to streamline the process of pulling OLLAMA models.  The primary change is moving the `pull_model.clj` logic directly into the `pull_model.Dockerfile`, removing the need for a separate `pull_model.clj` file. This improves the build process and makes the Docker image more compact.\n\n**Specific Changes:**\n\n1. **Removed Separate File:** The previously separate `pull_model.clj` file is now directly embedded in the `pull_model.Dockerfile`. This eliminates the need to copy a separate file into the container.\n\n\n2. **Simplified Entrypoint:**  The `ENTRYPOINT` directive is adjusted to point directly to the embedded Clojure script within the Dockerfile (`pull_model.clj`).\n\n\n3. **Error Handling:** The `try...catch` block within the Clojure code handles potential errors during the OLLAMA model pull process. The `catch` block exits the program if any exceptions occur.\n\n\n\n**Impact on Application Behavior:**\n\nThe change ensures the same OLLAMA model pulling logic is executed as before.  Previously, the separate `pull_model.clj` file would be executed by babashka.  With this change, that functionality is encapsulated into the Dockerfile, resulting in cleaner, more contained model pulling logic within the Docker image.\n\n**Benefits:**\n\n* **Reduced Complexity:** Simplifies the Docker image by combining the model pulling script directly with the Dockerfile.\n* **Improved Build:** The build process is now potentially faster and more efficient due to reduced steps.\n\n**Potential Issues and Future Considerations:**\n\nWhile this refactoring improves the code, the Docker image size remains a potential concern. Future consideration could involve optimizing the build process for minimal image size without impacting functionality or reliability.\n\n\n\n"
+    },
+    {
+      pullReqTitle: "fix: Dockerfile to build and pull images.",
+      pullReqMessage: "SO: Windows  \r\nDocker and docker compose running on WSL (Ubuntu).\r\n\r\nDocker Version: 26.1.3\r\nDocker Compose version v2.32.4\r\n\r\nThose changes fixed problems to bringing up the database and pull_model services. The other apps didn't run because these dependencies.\r\n\r\nThe order:\r\n\r\n1. docker-compose up llm\r\n2. docker-compose up database pull-model\r\n3. docker-compose up <app>",
+      pullReqAuthorName: "leonardovaleriano",
+      pullReqAuthorAvtar: "https://avatars.githubusercontent.com/u/9980129?v=4",
+      pullReqDate: "2025-01-21T13:26:59.000Z",
+      summary: "## PR Summary\n\nThis pull request refactors the `pull_model.clj` script within the Dockerfile to streamline the process of pulling OLLAMA models.  The primary change is moving the `pull_model.clj` logic directly into the `pull_model.Dockerfile`, removing the need for a separate `pull_model.clj` file. This improves the build process and makes the Docker image more compact.\n\n**Specific Changes:**\n\n1. **Removed Separate File:** The previously separate `pull_model.clj` file is now directly embedded in the `pull_model.Dockerfile`. This eliminates the need to copy a separate file into the container.\n\n\n2. **Simplified Entrypoint:**  The `ENTRYPOINT` directive is adjusted to point directly to the embedded Clojure script within the Dockerfile (`pull_model.clj`).\n\n\n3. **Error Handling:** The `try...catch` block within the Clojure code handles potential errors during the OLLAMA model pull process. The `catch` block exits the program if any exceptions occur.\n\n\n\n**Impact on Application Behavior:**\n\nThe change ensures the same OLLAMA model pulling logic is executed as before.  Previously, the separate `pull_model.clj` file would be executed by babashka.  With this change, that functionality is encapsulated into the Dockerfile, resulting in cleaner, more contained model pulling logic within the Docker image.\n\n**Benefits:**\n\n* **Reduced Complexity:** Simplifies the Docker image by combining the model pulling script directly with the Dockerfile.\n* **Improved Build:** The build process is now potentially faster and more efficient due to reduced steps.\n\n**Potential Issues and Future Considerations:**\n\nWhile this refactoring improves the code, the Docker image size remains a potential concern. Future consideration could involve optimizing the build process for minimal image size without impacting functionality or reliability.\n\n\n\n"
+    },
+    {
+      pullReqTitle: "fix: Dockerfile to build and pull images.",
+      pullReqMessage: "SO: Windows  \r\nDocker and docker compose running on WSL (Ubuntu).\r\n\r\nDocker Version: 26.1.3\r\nDocker Compose version v2.32.4\r\n\r\nThose changes fixed problems to bringing up the database and pull_model services. The other apps didn't run because these dependencies.\r\n\r\nThe order:\r\n\r\n1. docker-compose up llm\r\n2. docker-compose up database pull-model\r\n3. docker-compose up <app>",
+      pullReqAuthorName: "leonardovaleriano",
+      pullReqAuthorAvtar: "https://avatars.githubusercontent.com/u/9980129?v=4",
+      pullReqDate: "2025-01-21T13:26:59.000Z",
+      summary: "## PR Summary\n\nThis pull request refactors the `pull_model.clj` script within the Dockerfile to streamline the process of pulling OLLAMA models.  The primary change is moving the `pull_model.clj` logic directly into the `pull_model.Dockerfile`, removing the need for a separate `pull_model.clj` file. This improves the build process and makes the Docker image more compact.\n\n**Specific Changes:**\n\n1. **Removed Separate File:** The previously separate `pull_model.clj` file is now directly embedded in the `pull_model.Dockerfile`. This eliminates the need to copy a separate file into the container.\n\n\n2. **Simplified Entrypoint:**  The `ENTRYPOINT` directive is adjusted to point directly to the embedded Clojure script within the Dockerfile (`pull_model.clj`).\n\n\n3. **Error Handling:** The `try...catch` block within the Clojure code handles potential errors during the OLLAMA model pull process. The `catch` block exits the program if any exceptions occur.\n\n\n\n**Impact on Application Behavior:**\n\nThe change ensures the same OLLAMA model pulling logic is executed as before.  Previously, the separate `pull_model.clj` file would be executed by babashka.  With this change, that functionality is encapsulated into the Dockerfile, resulting in cleaner, more contained model pulling logic within the Docker image.\n\n**Benefits:**\n\n* **Reduced Complexity:** Simplifies the Docker image by combining the model pulling script directly with the Dockerfile.\n* **Improved Build:** The build process is now potentially faster and more efficient due to reduced steps.\n\n**Potential Issues and Future Considerations:**\n\nWhile this refactoring improves the code, the Docker image size remains a potential concern. Future consideration could involve optimizing the build process for minimal image size without impacting functionality or reliability.\n\n\n\n"
+    }
+]
 }
+
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   // Note: I'm using state to show active item.
   // IRL you should use the url/router.
   const [activeItem, setActiveItem] = React.useState(data.navMain[0])
   const [mails, setMails] = React.useState(data.mails)
+  const [commits,setCommits] = React.useState(data.commits)
+  const [prs,setPRs] = React.useState(data.prs)
   const { setOpen } = useSidebar()
+  const { user } = useUser();
+  const email = user?.emailAddresses 
+
+
+  const handleNavItemClick = async (item:any) => {
+    setActiveItem(item);
+    
+    // Call the API based on the navMain title and URL
+    try {
+      const response = await fetch(`http://localhost:8080/v1/api/projects/56a0b301-87ba-4c1c-b5b5-6bd60c6f3f35/${item.url}`,{
+        headers:{
+          'Authorization': `${email}`
+        }
+      }); 
+      const data = await response.json();
+
+      if (item.title === "Chat") {
+        setMails(data.mails || []); // Set mails for Chat
+      } else if (item.title === "PRs") {
+        setPRs(data.prs || []); // Set PRs for PRs
+      } else if (item.title === "Commits") {
+        setCommits(data.commits || []); // Set commits for Commits
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  }
 
   return (
     <Sidebar
@@ -161,7 +232,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       {/* This will make the sidebar appear as icons. */}
       <Sidebar
         collapsible="none"
-        className="!w-[calc(var(--sidebar-width-icon)_+_1px)] border-r"
+        className="!w-[calc(var(--sidebar-width-icon)_+_100px)] border-r"
       >
         <SidebarHeader>
           <SidebarMenu>
@@ -172,8 +243,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                     <Command className="size-4" />
                   </div>
                   <div className="grid flex-1 text-left text-sm leading-tight">
-                    <span className="truncate font-semibold">Acme Inc</span>
-                    <span className="truncate text-xs">Enterprise</span>
+                    <span className="truncate font-semibold">PullScan</span>
                   </div>
                 </a>
               </SidebarMenuButton>
@@ -191,17 +261,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                         children: item.title,
                         hidden: false,
                       }}
-                      onClick={() => {
-                        setActiveItem(item)
-                        const mail = data.mails.sort(() => Math.random() - 0.5)
-                        setMails(
-                          mail.slice(
-                            0,
-                            Math.max(5, Math.floor(Math.random() * 10) + 1)
-                          )
-                        )
-                        setOpen(true)
-                      }}
+                      onClick={() => {handleNavItemClick(item)}}
                       isActive={activeItem.title === item.title}
                       className="px-2.5 md:px-2"
                     >
@@ -215,44 +275,24 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           </SidebarGroup>
         </SidebarContent>
         <SidebarFooter>
-          <NavUser user={data.user} />
         </SidebarFooter>
       </Sidebar>
 
-      {/* This is the second sidebar */}
-      {/* We disable collapsible and let it fill remaining space */}
       <Sidebar collapsible="none" className="hidden flex-1 md:flex">
         <SidebarHeader className="gap-3.5 border-b p-4">
-          <div className="flex w-full items-center justify-between">
+          <div className="flex w-full items-center justify-between space-y-2">
             <div className="text-base font-medium text-foreground">
               {activeItem.title}
             </div>
-            <Label className="flex items-center gap-2 text-sm">
-              <span>Unreads</span>
-              <Switch className="shadow-none" />
-            </Label>
+           <SelectProject/>
           </div>
-          <SidebarInput placeholder="Type to search..." />
         </SidebarHeader>
         <SidebarContent>
           <SidebarGroup className="px-0">
             <SidebarGroupContent>
-              {mails.map((mail) => (
-                <a
-                  href="#"
-                  key={mail.email}
-                  className="flex flex-col items-start gap-2 whitespace-nowrap border-b p-4 text-sm leading-tight last:border-b-0 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-                >
-                  <div className="flex w-full items-center gap-2">
-                    <span>{mail.name}</span>{" "}
-                    <span className="ml-auto text-xs">{mail.date}</span>
-                  </div>
-                  <span className="font-medium">{mail.subject}</span>
-                  <span className="line-clamp-2 w-[260px] whitespace-break-spaces text-xs">
-                    {mail.teaser}
-                  </span>
-                </a>
-              ))}
+            {activeItem.title === "Chat" }
+            {activeItem.title === "PRs" && <PrComponent prs={prs}/> }
+            {activeItem.title === "Commits" && <CommitComponent commits={commits} />}
             </SidebarGroupContent>
           </SidebarGroup>
         </SidebarContent>
