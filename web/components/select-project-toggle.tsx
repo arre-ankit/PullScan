@@ -1,6 +1,6 @@
 "use client"
 
-import * as React from "react"
+import React from 'react';
 import { Check, ChevronsUpDown } from "lucide-react"
 
 import { cn } from "@/lib/utils"
@@ -18,21 +18,61 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "./ui/popover"
+import { useUser } from "@clerk/nextjs"
+import { useParams } from 'next/navigation';
 
-const projects = [
-  {
-    value: "gen-stack",
-    label: "Gen Stack",
-  },
-  {
-    value: "gen-stackff",
-    label: "Gen Stack",
-  }
-]
 
-export function SelectProject() {
-  const [open, setOpen] = React.useState(false)
-  const [value, setValue] = React.useState("")
+
+interface Project {
+  id: string;
+  createdAt: string; // ISO date string
+  updatedAt: string; // ISO date string
+  name: string;
+  githubUrl: string;
+  deletedAt: string | null;
+}
+
+interface SelectProjectToggleProps {
+  onProjectSelect: (projectId: string) => void;
+}
+
+const SelectProjectToggle:any = ({ onProjectSelect }:any) => {
+  const { user } = useUser();
+  const email = user?.emailAddresses[0]?.emailAddress;
+  const [open, setOpen] = React.useState(false);
+  const [value, setValue] = React.useState("");
+  const [projects, setProjects] = React.useState<Project[]>([]);
+  const [isLoading, setIsLoading] = React.useState(false);
+  const { id } = useParams(); // Get the project ID from the URL
+
+  React.useEffect(() => {
+    if (!email) return;
+
+    const fetchProjects = async () => {
+      setIsLoading(true);
+      try {
+        const response = await fetch(`http://localhost:8080/v1/api/projects`, {
+          headers: {
+            'Authorization': email
+          }
+        });
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        setProjects(Array.isArray(data.projects) ? data.projects : []);
+      } catch (error) {
+        console.error("Error fetching project details:", error);
+        setProjects([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchProjects();
+  }, [email]);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -44,7 +84,7 @@ export function SelectProject() {
           className="w-[180px] justify-between"
         >
           {value
-            ? projects.find((project) => project.value === value)?.label
+            ? projects.find((project) => project.name === value)?.name || "Select project..."
             : "Select project..."}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
@@ -55,28 +95,40 @@ export function SelectProject() {
           <CommandList>
             <CommandEmpty>No project found.</CommandEmpty>
             <CommandGroup>
-              {projects.map((project) => (
-                <CommandItem
-                  key={project.value}
-                  value={project.value}
-                  onSelect={(currentValue) => {
-                    setValue(currentValue === value ? "" : currentValue)
-                    setOpen(false)
-                  }}
-                >
-                  <Check
-                    className={cn(
-                      "mr-2 h-4 w-4",
-                      value === project.value ? "opacity-100" : "opacity-0"
-                    )}
-                  />
-                  {project.label}
-                </CommandItem>
-              ))}
+              {isLoading ? (
+                <CommandItem disabled>Loading...</CommandItem>
+              ) : projects.length === 0 ? (
+                <CommandItem disabled>No projects available</CommandItem>
+              ) : (
+                projects.map((project) => (
+                  <CommandItem
+                    key={project.id}
+                    value={project.name}
+                    onSelect={(currentValue) => {
+                      const selectedProject = projects.find(p => p.name === currentValue);
+                      if (selectedProject) {
+                        setValue(currentValue === value ? "" : currentValue);
+                        onProjectSelect(selectedProject.id);
+                      }
+                      setOpen(false);
+                    }}
+                  >
+                    <Check
+                      className={cn(
+                        "mr-2 h-4 w-4",
+                        value === project.name ? "opacity-100" : "opacity-0"
+                      )}
+                    />
+                    {project.name}
+                  </CommandItem>
+                ))
+              )}
             </CommandGroup>
           </CommandList>
         </Command>
       </PopoverContent>
     </Popover>
-  )
+  );
 }
+
+export default SelectProjectToggle;

@@ -1,16 +1,33 @@
 "use client"
 import Image from "next/image"
+import { useState } from "react"
+import { Commit } from "./app-sidebar";
+import { useSetRecoilState } from 'recoil';
+import { selectedCommitIdState } from '../store/atoms/commit' // Adjust the path as necessary
 
-export function CommitComponent({commits}:any) {
+interface CommitComponentProps {
+  commits: Commit[];
+  onCommitSelect: (commit: Commit | null) => void; // New prop for handling commit selection
+}
 
+export function CommitComponent({ commits = [], onCommitSelect }: CommitComponentProps) {
+  const [expandedCommit, setExpandedCommit] = useState<string | null>(null);
+  const setSelectedCommitId = useSetRecoilState(selectedCommitIdState);
+
+  const handleCommitClick = (commit: Commit) => {
+    const isSelected = expandedCommit === commit.id;
+    setExpandedCommit(isSelected ? null : commit.id);
+    onCommitSelect(isSelected ? null : commit); // Notify parent about the selected commit
+    setSelectedCommitId(isSelected ? null : commit.id); // Update Recoil state
+  };
 
   return (
     <>
-      {commits.map((commit:any) => (
-        <div key={`${commit.commitDate}-${commit.commitMessage}`}>
+      {commits.map((commit: Commit) => (
+        <div key={`${commit.id}`}>
           <a
-            href="#"
-            key={commit.id}
+            href={`#${commit.id}`}
+            onClick={() => handleCommitClick(commit)}
             className="flex flex-col items-start gap-2 whitespace-nowrap border-b p-4 text-sm leading-tight last:border-b-0 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
           >
             <div className="flex w-full items-center gap-2">
@@ -25,5 +42,5 @@ export function CommitComponent({commits}:any) {
         </div>
       ))}
     </>
-  )
+  );
 }

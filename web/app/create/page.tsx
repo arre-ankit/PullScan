@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import { useUser } from '@clerk/clerk-react';
 import { useState } from "react"
+import { useRouter } from "next/navigation";
 
 type FormInput = {
     repoUrl: string
@@ -18,11 +19,12 @@ export default function  CreatePage(){
     const email = user?.emailAddresses[0]?.emailAddress; // Extract the email
     const {register,handleSubmit,reset} = useForm<FormInput>()
     const [loading, setloading] = useState(false);
+    const router  = useRouter()
 
 
     async function onSubmit(data: FormInput) {
         setloading(true)
-        const res = await fetch('http://localhost:8080/v1/api/project/create', { // Adjust the endpoint as necessary
+        const res = await fetch('http://localhost:8080/v1/api/projects/create', { // Adjust the endpoint as necessary
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -32,8 +34,7 @@ export default function  CreatePage(){
                 name: data.projectName,
                 githubUrl: data.repoUrl,
                 githubToken: data.githubToken
-            }),
-            credentials: 'include'
+            })
         })
         .then(response => {
             if (!response.ok) {
@@ -41,10 +42,10 @@ export default function  CreatePage(){
             }
             return response.json();
         })
-        .then(() => {
+        .then((data) => {
             toast.success('Project created successfully');
             setloading(false)
-            reset();
+            router.push(`/dashboard/projects/${data.project.id}`);
         })
         .catch(() => {
             toast.error('Failed to create project');

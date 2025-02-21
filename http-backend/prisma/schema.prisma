@@ -37,8 +37,8 @@ model Project {
     createdAt                   DateTime @default(now())
     updatedAt                   DateTime @updatedAt
 
-    name                        String
-    githubUrl                   String
+    name                        String @unique
+    githubUrl                   String @unique
 
     deletedAt                   DateTime?
     userToProject               UserToProject[]
