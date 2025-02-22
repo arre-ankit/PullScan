@@ -14,6 +14,7 @@ export interface PR {
     pullReqAuthorAvtar: string
     pullReqDate: string
     summary: string
+    pullReqNumber: number
 }
 
 export interface Project {
