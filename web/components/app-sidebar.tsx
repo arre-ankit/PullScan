@@ -18,58 +18,15 @@ import {
 
 import { useUser } from '@clerk/clerk-react';
 import { CommitComponent } from "./Commit"
-import Image from "next/image"
+
 import { PrComponent } from "./PR"
 import { useParams, useRouter } from "next/navigation";
+import { Commit, PR } from "@/lib/types";
+import { CurrentItemContext } from "@/context/context";
+import { data } from "@/app/dashboard/projects/[...id]/page";
 
 
-export interface Commit {
-    id: string
-    commitMessage: string
-    commitAuthorName: string
-    commitAuthorAvtar: string
-    commitDate: string
-    summary: string
-}
 
-interface PR {
-    pullReqTitle: string
-    pullReqMessage: string
-    pullReqAuthorName: string
-    pullReqAuthorAvtar: string
-    pullReqDate: string
-    summary: string
-}
-
-
-const data = {
-  navMain: [
-    {
-      title: "Commits",
-      icon: GitCommitHorizontal ,
-      isActive: false,
-      url: 'commits'
-    },
-    {
-      title: "PRs",
-      icon: GitPullRequestArrow,
-      isActive: false,
-      url: 'prs'
-    },
-    {
-      title: "Chat",
-      icon: MessageCircle,
-      isActive: true,
-      url: 'questions'
-    }
-  ]
-}
-
-interface Project {
-  id: string
-  name: string
-  githubUrl: string
-}
 
 interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
   commit: Commit[] | null
@@ -79,18 +36,18 @@ export function AppSidebar({commit, ...props }:AppSidebarProps) {
   // Note: I'm using state to show active item.
   // IRL you should use the url/router.
   const { id } = useParams(); // Get the project ID from the URL
-  const [activeItem, setActiveItem] = React.useState(data.navMain[0])
   const [commits,setCommits] = React.useState<Commit[]>(commit || [])
   const [prs,setPRs] = React.useState<PR[]>([])
   const { setOpen } = useSidebar()
   const { user } = useUser();
   const email = user?.emailAddresses 
   const [selectedCommit, setSelectedCommit] = React.useState<Commit | null>(null);
-
+  const { currentItem } = React.useContext(CurrentItemContext)
+  const {setCurrentItem} =  React.useContext(CurrentItemContext)
 
 
   const handleNavItemClick = async (item:any) => {
-    setActiveItem(item);
+    setCurrentItem(item)
     
     // Call the API based on the navMain title and URL
     try {
@@ -154,7 +111,7 @@ export function AppSidebar({commit, ...props }:AppSidebarProps) {
                         hidden: false,
                       }}
                       onClick={() => {handleNavItemClick(item)}}
-                      isActive={activeItem.title === item.title}
+                      isActive={currentItem?.title === item.title}
                       className="px-2.5 md:px-2"
                     >
                       <item.icon />
@@ -174,19 +131,18 @@ export function AppSidebar({commit, ...props }:AppSidebarProps) {
         <SidebarHeader className="gap-3.5 border-b p-4">
           <div className="flex w-full items-center justify-between space-y-2">
             <div className="text-base font-medium text-foreground">
-              {activeItem.title}
+              {currentItem?.title}
             </div>
           </div>
         </SidebarHeader>
         <SidebarContent>
           <SidebarGroup className="px-0">
             <SidebarGroupContent>
-            {activeItem.title === "Chat" }
-            {activeItem.title === "PRs" && <PrComponent prs={prs}/> }
-            {activeItem.title === "Commits" && (
+            {currentItem?.title === "Chat" }
+            {currentItem?.title === "PRs" && <PrComponent prs={prs}/> }
+            {currentItem?.title === "Commits" && (
               <CommitComponent
                 commits={commits}
-                onCommitSelect={setSelectedCommit}
               />
             )}
             </SidebarGroupContent>
