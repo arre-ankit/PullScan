@@ -27,6 +27,16 @@ router.post("/create", async (req,res): Promise<any> => {
         return res.status(401).json({ error: "Unauthorized" });
     }
 
+    const isproject = await prismaClient.project.findUnique({
+        where:{
+            name: zreq.data?.name
+        }
+    })
+
+    if(isproject){
+        return  res.status(401).json({ error: "Project already Exist" });
+    }
+
     const project = await prismaClient.project.create({
         data:{
             name: zreq.data?.name || "",
@@ -40,7 +50,7 @@ router.post("/create", async (req,res): Promise<any> => {
     })
 
 
-    await indexGithubRepo(project.id,zreq.data?.githubUrl || '', zreq.data?.githubToken)
+    //await indexGithubRepo(project.id,zreq.data?.githubUrl || '', zreq.data?.githubToken)
     await pollCommits(project.id)
     await pollPullRequests(project.id)
 

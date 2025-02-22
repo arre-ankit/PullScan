@@ -1,10 +1,10 @@
 import { GithubRepoLoader } from "@langchain/community/document_loaders/web/github"
 import {Document} from "@langchain/core/documents"
 import { doc } from "prettier"
-import { aigenerateEmbedding, summarizecode } from "../gemni"
+import { aigenerateEmbedding, summarizecode } from "../ai/gemni"
 import { prismaClient } from "../../db/index"
 
-export const loadGithubRepo = async (githubUrl: string , githubToken?:string) => {
+export const loadGithubRepo = async (githubUrl: string, githubToken?: string) => {
     const loader = new GithubRepoLoader(githubUrl, {
         accessToken: githubToken || '',
         branch: 'main',
@@ -18,7 +18,13 @@ export const loadGithubRepo = async (githubUrl: string , githubToken?:string) =>
     return docs
 }
 
-//console.log(await loadGithubRepo('https://github.com/docker/genai-stack'))
+// async function main(){
+//     const githubToken = process.env.GITHUB_TOKEN
+//     console.log(await loadGithubRepo('https://github.com/docker/genai-stack', githubToken))
+// }
+
+// main()
+
 
 export const indexGithubRepo = async (projectId :string, githubUrl:string, githubToken?:string) => {
     const docs = await loadGithubRepo(githubUrl, githubToken)

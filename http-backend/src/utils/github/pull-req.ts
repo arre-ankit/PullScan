@@ -1,8 +1,8 @@
 import { prismaClient } from "../../db/index"
-import { aisummarisePR } from "../gemni"
+import { aisummarisePR } from "../ai/gemni"
 import { octokit } from "./octakit.js";
 import { fetchProjectGithubUrl } from "./commit";
-import { CodeChange } from "../gemni";
+import { CodeChange } from "../ai/gemni";
 
 export const pollPullRequests = async (projectId: string) =>{
     const {project,githubUrl} = await fetchProjectGithubUrl(projectId);
@@ -21,6 +21,7 @@ export const pollPullRequests = async (projectId: string) =>{
 
     const prs = await prismaClient.pr.createMany({
         data: summaries.map((summary, index) => {
+            console.log(`processing pr ${index}`)
             const unprocessedPR = unprocessedPRs[index]; // Get the corresponding unprocessed PR
 
             // Ensure that pullReqHash is not null
@@ -28,6 +29,7 @@ export const pollPullRequests = async (projectId: string) =>{
 
             return {
                 projectId: projectId,
+                pullReqNumber: unprocessedPR?.number || "",
                 pullReqHash: pullReqHash, // Ensure this is a string
                 pullReqTitle: unprocessedPR?.pullReqTitle || "", // Provide a default value if undefined
                 pullReqMessage: unprocessedPR?.pullReqMessage || "", // Provide a default value if undefined
@@ -55,9 +57,10 @@ export const getPullRequest = async (githubUrl: string) => {
             repo
         })
 
+
         const sortedPulls = response.data.sort((a:any, b:any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()) as any[];
 
-        return sortedPulls.slice(0,4).map((pr: any) => ({
+        return sortedPulls.slice(0,10).map((pr: any) => ({
             number: pr.number,
             pullReqHash: pr.merge_commit_sha as string,
             pullReqTitle: pr.title,
@@ -83,7 +86,7 @@ async function filterUnprocessedPRs(projectId:string, pullReqHashes:any){
             where:{projectId}
         })
     
-        const unprocessedPRs = pullReqHashes.filter((pr:any)=> !processedPr.some((processedPr) => processedPr.pullReqHash === pr.pullReqHash))
+        const unprocessedPRs = pullReqHashes.filter((pr:any)=> !processedPr.some((processedPr:any) => processedPr.pullReqHash === pr.pullReqHash))
         return unprocessedPRs
 }
 
@@ -114,7 +117,8 @@ async function summarizePR(githubUrl: string, pullReqHashes: string, pr_number:n
 }
 
 // async function main(){
-//     await summarizePR("https://github.com/n8n-io/n8n","26e245a546d1b0dd386a95047eeb736572f85def",12816,"refactor(core): Move all execution lifecycle telemetry events to lifecycle hooks (no-changelog)","## Summary\r\n\r\nThis PR moves telemetry events out of workflow-execute-additional-data and WorkflowRunner, and into execution lifecycle hooks, to make these temetry hooks consistent across various modes.\r\n\r\n## Review / Merge checklist\r\n\r\n- [x] PR title and summary are descriptive. ([conventions](../blob/master/.github/pull_request_title_conventions.md)) <!--\r\n   **Remember, the title automatically goes into the changelog.\r\n   Use `(no-changelog)` otherwise.**\r\n-->\r\n- [ ] [Docs updated](https://github.com/n8n-io/n8n-docs) or follow-up ticket created.\r\n- [x] Tests included. <!--\r\n   A bug is not considered fixed, unless a test is added to prevent it from happening again.\r\n   A feature is not complete without tests.\r\n-->\r\n- [ ] PR Labeled with `release/backport` (if the PR is an urgent fix that needs to be backported)\r\n").then((summary)=> {console.log(summary)})
+//     await summarizePR("https://github.com/n8n-io/n8n","26e245a546d1b0dd386a95047eeb736572f85def",12816,"refactor(core): Move all execution lifecycle telemetry events to lifecycle hooks (no-changelog)","## Summary\r\n\r\nThis PR moves telemetry events out of workflow-execute-additional-data and WorkflowRunner, and into execution lifecycle hooks, to make these temetry hooks consistent across various modes.\r\n\r\n## Review / Merge checklist\r\n\r\n- [x] PR title and summary are descriptive. ([conventions](../blob/master/.github/pull_request_title_conventions.md)) <!--\r\n   **Remember, the title automatically goes into the changelog.\r\n   Use `(no-changelog)` otherwise.**\r\n-->\r\n- [ ] [Docs updated](https://github.com/n8n-io/n8n-docs) or follow-up ticket created.\r\n- [x] Tests included. <!--\r\n   A bug is not considered fixed, unless a test is added to prevent it from happening again.\r\n   A feature is not complete without tests.\r\n-->\r\n- [ ] PR Labeled with `release/backport` (if the PR is an urgent fix that needs to be backported)\r\n").then((summary)=> {console.log(summary),typeof(summary)})
+    
 // }
 
 // main()

@@ -1,6 +1,6 @@
 import {GoogleGenerativeAI} from "@google/generative-ai"
 import { Document } from "@langchain/core/documents"
-import { code_review_prompt, commit_main_summary_prompt, main_summary_prompt, summary_prompt } from "./prompt.js"
+import { commit_main_summary_prompt, pr_summary_prompt } from "../prompt"
 
 
 export interface CodeChange {
@@ -23,42 +23,33 @@ export const aisummariseCommit = async (diff: string,commitMessage:string) => {
     ])
 
     return response.response.text()
+    
 }
 
 export const aisummarisePR = async (codes:CodeChange[],pullReqTitle: string, pullReqMessage:string) => {
     const full_code:string = codes.map((code) => code.patch + code.filename).join('\n');
-    
-    const summary = await model.generateContent([
-        summary_prompt({
-            title:pullReqTitle, 
-            description:pullReqMessage,
-            file_diff: full_code
-       })
-    ])
 
-    console.log(summary.response.text())
-    
+    // const pr_prompt = pr_summary_prompt({
+    //         title:pullReqTitle, 
+    //         description:pullReqMessage,
+    //         file_diff:full_code
+    //    })
 
+    // const prompt: MessageParam[] = [{
+    //     role: 'user',
+    //     content: `${pr_prompt}`
+    // }]
 
-    const suggegested_pr_changes = await model.generateContent([
-        code_review_prompt({
-            file_diff: full_code,
-            title: pullReqTitle, 
-            description: pullReqMessage, 
-            short_summary: summary.response.text()
-        })
-    ]);
+    // const main_summary = await generateCompletionClaude(prompt)
 
-    console.log(suggegested_pr_changes.response.text())    
+    const main_summary = await  await model.generateContent([
+        pr_summary_prompt({
+                    title:pullReqTitle, 
+                    description:pullReqMessage,
+                    file_diff:full_code
+               })
+        ])
 
-    const main_summary = await model.generateContent([
-        main_summary_prompt({
-            title:pullReqTitle, 
-            description:pullReqMessage,
-            file_diff:full_code,
-            suggegested_changes: suggegested_pr_changes.response.text()
-       })
-    ])
 
     return main_summary.response.text()
 }
