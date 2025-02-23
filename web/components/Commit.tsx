@@ -25,11 +25,11 @@ export function CommitComponent({ commits }: CommitInterface) {
           >
             <div className="flex w-full items-center gap-2">
               <Image alt={commit.commitAuthorName} src={commit.commitAuthorAvtar} width={20} height={20} className="flex-none rounded-full bg-gray-50"></Image>
-              <span className="text-sm font-semibold w-1">{commit.commitMessage}</span>
+              <span className="flex text-sm font-semibold w-1">{commit.commitMessage}</span>
             </div>
             <span className="font-medium">{commit.commitAuthorName}</span>
-            <span className="line-clamp-2 w-[260px] whitespace-break-spaces text-xs">
-              {commit.summary}
+            <span className="line-clamp-1 w-[260px] whitespace-break-spaces text-xs">
+              {commit.commitDate}
             </span>
           </a>
         </div>

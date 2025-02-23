@@ -55,8 +55,7 @@ export default function  CreatePage(){
     }
 
     return (
-        <div className="flex items-center gap-12 h-full justify-center">
-            <img src="/images.png" className="h-56 w-auto"/>
+        <div className="flex justify-center items-center min-h-screen">
             <div>
                 <div>
                     <h1 className="font-semibold text-2xl">
@@ -66,7 +65,7 @@ export default function  CreatePage(){
                         Enter the URL of your repo
                     </p>
                 </div>
-                <div className="h-4"></div>
+                <div className="h-4 flex"></div>
                 <div>
                     <form onSubmit={handleSubmit(onSubmit)}>
                         <Input {...register('projectName', {required:true})} required placeholder="Project Name"/>

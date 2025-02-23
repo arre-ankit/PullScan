@@ -88,13 +88,10 @@ export function AppSidebar({commit, ...props }:AppSidebarProps) {
             <SidebarMenuItem>
               <SidebarMenuButton size="lg" asChild className="md:h-8 md:p-0">
                 <a href="#">
-                  <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                    <Command className="size-4" />
-                  </div>
-                  <div className="grid flex-1 text-left text-sm leading-tight">
+                  <div className="flex justify-center flex-1 text-left text-lg leading-tight">
                     <span className="truncate font-semibold">PullScan</span>
                   </div>
-                </a>
+                </a> 
               </SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarMenu>
