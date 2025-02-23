@@ -1,14 +1,19 @@
 import { GithubRepoLoader } from "@langchain/community/document_loaders/web/github"
-import {Document} from "@langchain/core/documents"
-import { doc } from "prettier"
-import { aigenerateEmbedding, summarizecode } from "../ai/gemni"
-import { prismaClient } from "../../db/index"
+import { uploadMemoryDocument } from "../langbase/memory"
+
 
 export const loadGithubRepo = async (githubUrl: string, githubToken?: string) => {
     const loader = new GithubRepoLoader(githubUrl, {
         accessToken: githubToken || '',
         branch: 'main',
-        ignoreFiles: ['package-lock.json', 'yarn.lock','pnpm-lock.yaml','bun.lockb'],
+        ignoreFiles: ['package-lock.json', 
+            'yarn.lock',
+            'pnpm-lock.yaml',
+            'bun.lockb',
+            '.dockerignore',
+            'Dockerfile',
+            'LICENSE',
+            '.gitignore'],
         recursive: true,
         'unknown': 'warn',
         'maxConcurrency': 5
@@ -18,51 +23,42 @@ export const loadGithubRepo = async (githubUrl: string, githubToken?: string) =>
     return docs
 }
 
+
+
+export const indexGithubRepo = async (projectId :string, githubUrl:string, name:string, githubToken?:string) => {
+    const docs = await loadGithubRepo(githubUrl, githubToken)
+    let i = 0;
+    for (const doc of docs) {
+        console.log(`Doc uploading ${i}`)
+        i++;
+        console.log(doc?.metadata?.source)
+        await uploadMemoryDocument(name, (doc.pageContent) as string, (doc?.metadata?.source)as string)
+    }
+    
+}
+
 // async function main(){
 //     const githubToken = process.env.GITHUB_TOKEN
-//     console.log(await loadGithubRepo('https://github.com/docker/genai-stack', githubToken))
+//     const docs = await loadGithubRepo('https://github.com/docker/genai-stack', githubToken)
+    
+//     for (const doc of docs) {
+//         await uploadMemoryDocument('ankit-life', (docs[5].pageContent) as string)
+//     }
+
 // }
 
 // main()
 
 
-export const indexGithubRepo = async (projectId :string, githubUrl:string, githubToken?:string) => {
-    const docs = await loadGithubRepo(githubUrl, githubToken)
-    const allEmbeddings = await generateEmbeddings(docs)
-    await Promise.allSettled(allEmbeddings.map(async (embedding,index)=>{
-        console.log(`Processing ${index} of ${allEmbeddings.length}`)
-        if(!embedding) return
 
-        const sourceCodeEmbedding = await prismaClient.sourceCodeEmbedding.create({
-            data:{
-                summary: embedding.summary,
-                sourceCode: embedding.SourceCode,
-                fileName: embedding.fileName,
-                projectId
 
-            }
-        })
 
-        await prismaClient.$executeRaw`
-        UPDATE "SourceCodeEmbedding"
-        SET "summaryEmbedding" = ${embedding.embedding}::vector
-        WHERE "id" = ${sourceCodeEmbedding.id}
-        `
-    }))
-}
+// async function main(){
+//     const githubToken = process.env.GITHUB_TOKEN
+//     console.log(await indexGithubRepo('d','https://github.com/docker/genai-stack','abc', githubToken))
+// }
 
-const generateEmbeddings = async (docs: Document[]) => {
-    return await Promise.all(docs.map(async doc => {
-        const summary = await summarizecode(doc)
-        const embedding = await aigenerateEmbedding(summary);
-        return {
-            summary,
-            embedding,
-            SourceCode: JSON.parse(JSON.stringify(doc.pageContent)),
-            fileName: doc.metadata.source
-        }
-    }))
-}
+// main()
 
 
 // Document {
@@ -88,3 +84,4 @@ const generateEmbeddings = async (docs: Document[]) => {
 //   }
 
 //   main()
+

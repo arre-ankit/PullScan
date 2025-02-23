@@ -1,7 +1,7 @@
 import { prismaClient } from "../../db/index"
 import axios  from "axios"
 import { aisummariseCommit } from "../ai/gemni.js"
-import {octokit} from "./octakit.js"
+import {octokit} from "./octakit"
 
 export const pollCommits = async (projectId: string) =>{
     const {project,githubUrl} = await fetchProjectGithubUrl(projectId);

@@ -4,6 +4,7 @@ import {prismaClient} from "../db/index"
 import { indexGithubRepo } from "../utils/github/github-loader";
 import { pollCommits } from "../utils/github/commit";
 import { pollPullRequests } from "../utils/github/pull-req";
+import { createMemory } from "../utils/langbase/memory";
 
 const projectScema = z.object({
     name:z.string(),
@@ -49,8 +50,8 @@ router.post("/create", async (req,res): Promise<any> => {
         }
     })
 
-
-    //await indexGithubRepo(project.id,zreq.data?.githubUrl || '', zreq.data?.githubToken)
+    const memory = await createMemory(`${project.id}_${zreq.data?.name}` || "")
+    await indexGithubRepo(project.id,zreq.data?.githubUrl || '',memory.name || "", zreq.data?.githubToken || '')
     await pollCommits(project.id)
     await pollPullRequests(project.id)
 
