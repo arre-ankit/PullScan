@@ -19,7 +19,6 @@ import {
   PopoverTrigger,
 } from "./ui/popover"
 import { useUser } from "@clerk/nextjs"
-import { useParams } from 'next/navigation';
 
 
 
