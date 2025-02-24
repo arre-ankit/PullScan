@@ -1,12 +1,14 @@
 import 'dotenv/config';
 import { getRunner, Langbase } from 'langbase';
 import { pipe_system_prompt } from './prompt';
+import { prismaClient } from '../../db';
+import { Response } from 'express';
 
 const langbase = new Langbase({
 	apiKey: process.env.LANGBASE_API_KEY!,
 });
 
-async function createPipe(pipeName:string,memoryName:string) {
+export async function createPipe(pipeName:string,memoryName:string) {
 	const chatAgent = await langbase.pipe.create({
 		name: pipeName,
 		description: `An AI agent to ask question from the codebase.`,
@@ -22,7 +24,7 @@ async function createPipe(pipeName:string,memoryName:string) {
     return chatAgent
 }
 
-async function callpipe(pipeName:string,prompt:string) {
+export async function callpipe(pipeName:string,prompt:string):Promise<String> {
 	const { stream } = await langbase.pipe.run({
 		name: pipeName,
 		stream: true,
@@ -34,16 +36,92 @@ async function callpipe(pipeName:string,prompt:string) {
 		],
 	});
 
-	const runner = getRunner(stream);
-	runner.on('content', content => {
-		process.stdout.write(content);
+    let fullResponse = '';
+    
+    return new Promise((resolve, reject) => {
+        const runner = getRunner(stream);
+        
+        runner.on('content', content => {
+            fullResponse += content;
+        });
+
+        runner.on('end', () => {
+            resolve(fullResponse);
+        });
+
+        runner.on('error', (error) => {
+            reject(error);
+        });
+    });
+
+}
+
+
+export async function streamLangbaseResponse(prompt: string, res: Response, options: {
+    pipeName: string,
+    projectId: string,
+    prompt: string,
+    userId: string
+  }) {
+    // Initialize Langbase
+    const langbase = new Langbase({
+      apiKey: process.env.LANGBASE_API_KEY!,
+    });
+  
+    // Store the complete answer for saving later
+    let completeAnswer = '';
+  
+    // Run the pipe
+    const { stream } = await langbase.pipe.run({
+		name: options.pipeName,
+		stream: true,
+		messages: [
+			{
+				role: `user`,
+				content: `${prompt}`,
+			},
+		],
 	});
+  
+    // Set up the runner to handle the stream
+    const runner = getRunner(stream);
+    
+    // Handle content chunks
+    runner.on('content', content => {
+      // Send chunk to client
+      res.write(`data: ${JSON.stringify({ content })}\n\n`);
+      
+      // Accumulate the complete answer
+      completeAnswer += content;
+    });
+  
+    // Handle stream end
+    runner.on('end', async () => {
+      // Save the complete answer to the database
+        await prismaClient.question.create({
+            data: {
+                project: { connect: { id: options.projectId } },
+                question: options.prompt,
+                answer: completeAnswer,
+                user: { connect: { id: options.userId } }
+            }
+        });
+      
+    //   // End the response
+      res.write(`data: ${JSON.stringify({ done: true })}\n\n`);
+      res.end();
+    });
+  
+    // Handle errors
+    runner.on('error', error => {
+      console.error("Streaming error:", error);
+      res.write(`data: ${JSON.stringify({ error: "An error occurred during streaming" })}\n\n`);
+      res.end();
+    });
+  }
+// async function main() {
+//     //createPipe('ccb6b329-a7fd-45af-81f5-64f9bd80763a_GENSTACK Final','ccb6b329-a7fd-45af-81f5-64f9bd80763a-gen-stack-final')
+//     callpipe('ccb6b329-a7fd-45af-81f5-64f9bd80763a-genstack-final','WHat is this repo about')
+// }
 
-}
-
-async function main() {
-    //createPipe('ccb6b329-a7fd-45af-81f5-64f9bd80763a_GENSTACK Final','ccb6b329-a7fd-45af-81f5-64f9bd80763a-gen-stack-final')
-    callpipe('ccb6b329-a7fd-45af-81f5-64f9bd80763a-genstack-final','WHat is this repo about')
-}
-
-main();
+// main();

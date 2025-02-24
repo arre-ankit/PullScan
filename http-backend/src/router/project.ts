@@ -5,7 +5,9 @@ import { indexGithubRepo } from "../utils/github/github-loader";
 import { pollCommits } from "../utils/github/commit";
 import { pollPullRequests } from "../utils/github/pull-req";
 import { createMemory } from "../utils/langbase/memory";
-import { createPipe } from "../utils/langbase/pipe";
+import { callpipe, createPipe, streamLangbaseResponse } from "../utils/langbase/pipe";
+import { streamText } from "ai"
+import { createStreamableValue } from "ai/rsc"
 
 const projectScema = z.object({
     name:z.string(),
@@ -108,7 +110,7 @@ router.get("/:projectId", async (req,res): Promise<any> => {
             emailAddress: email
         }
     })
-    const projectId = req.params.projectId
+    const projectId:string = req.params.projectId
 
     if (!user?.id) {
         return res.status(401).json({ error: "Unauthorized" });
@@ -168,33 +170,61 @@ router.get("/:projectId/prs", async (req,res): Promise<any> => {
 })
 
 
-// router.post("/:projectId/question", async (req,res):Promise<any> => {
-//     const zreq = questionScema.safeParse(req.body)
-//     const email = req.headers.authorization
-
-//     const user = await prismaClient.user.findUnique({
-//         where:{
-//             emailAddress: email
-//         }
-//     })
-
-//     if (!user?.id) {
-//         return res.status(401).json({ error: "Unauthorized" });
-//     }
-
-//     const answer = await 
+router.post("/:projectId/question", async (req,res):Promise<any> => {
+    const zreq = questionScema.safeParse(req.body)
+    const email = req.headers.authorization
+    const projectId = req.params.projectId
 
 
-//     const project = await prismaClient.project.create({
-//         data:{
-//             name: zreq.data?.name || "",
-//             githubUrl: zreq.data?.githubUrl || "",
-//             userToProject: {
-//                 create:{
-//                     userId: user?.id
-//                 }
-//             }
-//         }
-//     })
-// })
-// export const projectRouter = router
+    const user = await prismaClient.user.findUnique({
+        where:{
+            emailAddress: email
+        }
+    })
+
+    if (!user?.id) {
+        return res.status(401).json({ error: "Unauthorized" });
+    }
+
+    const questionAgent = await prismaClient.questionAgent.findFirst({
+        where:{
+            projectId: projectId
+        }
+    })
+
+        // Set headers for streaming
+        res.setHeader('Content-Type', 'text/event-stream');
+        res.setHeader('Cache-Control', 'no-cache');
+        res.setHeader('Connection', 'keep-alive');
+
+    try {
+        // const answer = await callpipe('ccb6b329-a7fd-45af-81f5-64f9bd80763a-genstack-final',zreq.data?.prompt || "")
+        await streamLangbaseResponse(zreq.data?.prompt || "", res,{
+            pipeName: questionAgent?.pipename || "",
+            projectId,
+            prompt: zreq.data?.prompt || "",
+            userId: user.id
+        });
+
+        // Save the complete response
+        // await prismaClient.question.create({
+        //     data: {
+        //         project: { connect: { id: projectId } },
+        //         question: zreq.data?.prompt || "",
+        //         answer: a.toString(),
+        //         user: { connect: { id: user.id } }
+        //     }
+        // });
+        res.end();
+
+    } catch (error) {
+        console.error('Error:', error);
+        res.status(500).json({ error: 'An error occurred' });
+    }
+
+
+})
+
+
+
+export const projectRouter = router
