@@ -22,4 +22,4 @@ jobs:
         mkdir -p ~/.ssh 
         chmod 700 ~/.ssh  
         ssh-keyscan ec2-3-110-45-72.ap-south-1.compute.amazonaws.com >> ~/.ssh/known_hosts
-        ssh -t -i keyfile ubuntu@ec2-3-110-45-72.ap-south-1.compute.amazonaws.com "sudo bash ~/deploy.sh"
+        ssh -t -i keyfile ubuntu@ec2-3-110-45-72.ap-south-1.compute.amazonaws.com "source ./deploy.sh"
