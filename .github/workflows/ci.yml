@@ -17,26 +17,12 @@ jobs:
       env:
         SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
       run: |
-        printf "%s" "$SSH_PRIVATE_KEY" > keyfile
+        echo "$SSH_PRIVATE_KEY" > keyfile
         chmod 600 keyfile
-
-        # Set up SSH
         mkdir -p ~/.ssh
-        chmod 700 ~/.ssh
-        ssh-keyscan ec2-3-110-45-72.ap-south-1.compute.amazonaws.com >> ~/.ssh/known_hosts
-
-        ssh -o StrictHostKeyChecking=no -i keyfile ubuntu@ec2-3-110-45-72.ap-south-1.compute.amazonaws.com << 'EOF'
-        set -e  
-
-        sudo chown -R ubuntu:ubuntu .git || true
-        sudo chmod -R 775 .git || true
-
+        cp known_hosts ~/.ssh/known_hosts
 
         if ! command -v pm2 &> /dev/null; then
           echo "PM2 not found, installing..."
           npm install -g pm2
-        fi
-
-
-        source ./deploy.sh
-        EOF
+        sh -t -i keyfile ubuntu@ec2-3-110-45-72.ap-south-1.compute.amazonaws.com "sudo bash ~/deploy.sh"
