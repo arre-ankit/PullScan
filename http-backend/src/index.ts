@@ -10,7 +10,7 @@ app.use(cors({
 }));
 
 app.get('/', (req, res) => {
-    res.send('Hello from express');
+    res.send('Hello');
 });
 
 app.use('/v1/api/projects',projectRouter)
