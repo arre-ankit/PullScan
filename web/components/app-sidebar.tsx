@@ -68,7 +68,7 @@ export function AppSidebar({commit, ...props }:AppSidebarProps) {
     
     // Call the API based on the navMain title and URL
     try {
-      const response = await fetch(`http://localhost:8080/v1/api/projects/${id}/${item.url}`,{
+      const response = await fetch(`http://ec2-3-110-45-72.ap-south-1.compute.amazonaws.com:8080/v1/api/projects/${id}/${item.url}`,{
         headers:{
           'Authorization': `${email}`
         }

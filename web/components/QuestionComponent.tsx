@@ -15,7 +15,7 @@ export function ChatBox({projectId}:Prop) {
     const handleQuestion = async (question:string) => {
         try{
             setloading(true)
-            await fetch(`http://localhost:8080/v1/api/projects/${projectId}/question`,{
+            await fetch(`http://ec2-3-110-45-72.ap-south-1.compute.amazonaws.com:8080/v1/api/projects/${projectId}/question`,{
                 method: 'POST',
                 headers:{
                   'Authorization': `ankit992827@gmail.com`,
