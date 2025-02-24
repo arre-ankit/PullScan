@@ -1,13 +1,12 @@
 import { Router } from "express";
-import { date, z } from "zod"
+import { z } from "zod"
 import {prismaClient} from "../db/index"
 import { indexGithubRepo } from "../utils/github/github-loader";
 import { pollCommits } from "../utils/github/commit";
 import { pollPullRequests } from "../utils/github/pull-req";
 import { createMemory } from "../utils/langbase/memory";
-import { callpipe, createPipe, streamLangbaseResponse } from "../utils/langbase/pipe";
-import { streamText } from "ai"
-import { createStreamableValue } from "ai/rsc"
+import { createPipe, streamLangbaseResponse } from "../utils/langbase/pipe";
+
 
 const projectScema = z.object({
     name:z.string(),
@@ -175,7 +174,6 @@ router.post("/:projectId/question", async (req,res):Promise<any> => {
     const email = req.headers.authorization
     const projectId = req.params.projectId
 
-
     const user = await prismaClient.user.findUnique({
         where:{
             emailAddress: email
@@ -192,37 +190,57 @@ router.post("/:projectId/question", async (req,res):Promise<any> => {
         }
     })
 
-        // Set headers for streaming
-        res.setHeader('Content-Type', 'text/event-stream');
-        res.setHeader('Cache-Control', 'no-cache');
-        res.setHeader('Connection', 'keep-alive');
+    console.log("Question Agent:", questionAgent);
+
+    if (!questionAgent) {
+        return res.status(404).json({ error: "Question agent not found." });
+    }
+
+    if (!questionAgent.pipename) {
+        return res.status(400).json({ error: "Pipe name is required." });
+    }
+
+    if (!process.env.LANGBASE_API_KEY) {
+        return res.status(500).json({ error: "API key is not set." });
+    }
 
     try {
-        // const answer = await callpipe('ccb6b329-a7fd-45af-81f5-64f9bd80763a-genstack-final',zreq.data?.prompt || "")
-        await streamLangbaseResponse(zreq.data?.prompt || "", res,{
+        const answer =  await streamLangbaseResponse(zreq.data?.prompt || "", res,{
             pipeName: questionAgent?.pipename || "",
             projectId,
             prompt: zreq.data?.prompt || "",
             userId: user.id
         });
 
-        // Save the complete response
-        // await prismaClient.question.create({
-        //     data: {
-        //         project: { connect: { id: projectId } },
-        //         question: zreq.data?.prompt || "",
-        //         answer: a.toString(),
-        //         user: { connect: { id: user.id } }
-        //     }
-        // });
-        res.end();
+        res.json({message: 'Success', answer})
 
     } catch (error) {
         console.error('Error:', error);
         res.status(500).json({ error: 'An error occurred' });
     }
+})
 
 
+router.get("/:projectId/chats", async (req,res): Promise<any> => {
+    const email = req.headers.authorization
+    const user = await prismaClient.user.findUnique({
+        where:{
+            emailAddress: email
+        }
+    })
+    const projectId = req.params.projectId
+
+    if (!user?.id) {
+        return res.status(401).json({ error: "Unauthorized" });
+    }
+
+    const chats = await prismaClient.question.findMany({
+        where:{
+            projectId:projectId
+        }
+    })
+
+    res.json({message: 'Success',chats})
 })
 
 
