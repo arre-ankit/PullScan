@@ -47,17 +47,16 @@ export async function createMemory(name:string) {
 }
 
 
-export async function uploadMemoryDocument(memoryName:string,file:any,fileName:string) {
+export async function uploadMemoryDocument(memoryName:string,file:string,fileName:string) {
 	console.log(memoryName)
+	const fileNamee = fileName.replace(/[\/\.]/g, '_') + '.md';
+	console.log(fileNamee)
+	const fileBuffer = Buffer.from(file);
 	const hasDocumentUploaded = await langbase.memory.documents.upload({
 		memoryName: memoryName,
-		contentType: 'application/pdf',
-		documentName: fileName,
-		document: file,
-		meta: {
-			category: 'technical',
-			section: 'overview',
-		},
+		contentType: 'text/plain',
+		documentName: fileNamee,
+		document: fileBuffer
 	});
 
 	if (hasDocumentUploaded.ok) {

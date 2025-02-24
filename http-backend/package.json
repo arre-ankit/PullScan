@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "dev": "tsc -b && node dist/index.js"
+    "dev": "tsc -b && node dist/index.js",
+    "baseai": "baseai"
   },
   "keywords": [],
   "author": "",
@@ -11,6 +12,7 @@
   "description": "",
   "dependencies": {
     "@anthropic-ai/sdk": "^0.36.3",
+    "@baseai/core": "^0.9.42",
     "@google/generative-ai": "^0.21.0",
     "@langchain/community": "^0.3.31",
     "@langchain/core": "^0.3.40",
@@ -28,5 +30,8 @@
     "openai": "^4.85.3",
     "prettier": "^3.5.1",
     "typescript": "^5.7.3"
+  },
+  "devDependencies": {
+    "baseai": "^0.9.42"
   }
 }

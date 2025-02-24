@@ -32,6 +32,7 @@ export const indexGithubRepo = async (projectId :string, githubUrl:string, name:
         console.log(`Doc uploading ${i}`)
         i++;
         console.log(doc?.metadata?.source)
+        console.log(typeof(doc.pageContent))
         await uploadMemoryDocument(name, (doc.pageContent) as string, (doc?.metadata?.source)as string)
     }
     

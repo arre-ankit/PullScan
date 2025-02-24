@@ -1,15 +1,20 @@
 import { Router } from "express";
-import { z } from "zod"
+import { date, z } from "zod"
 import {prismaClient} from "../db/index"
 import { indexGithubRepo } from "../utils/github/github-loader";
 import { pollCommits } from "../utils/github/commit";
 import { pollPullRequests } from "../utils/github/pull-req";
 import { createMemory } from "../utils/langbase/memory";
+import { createPipe } from "../utils/langbase/pipe";
 
 const projectScema = z.object({
     name:z.string(),
     githubUrl: z.string(),
     githubToken: z.string().optional()
+})
+
+const questionScema = z.object({
+    prompt:z.string()
 })
 
 const router = Router();
@@ -51,7 +56,17 @@ router.post("/create", async (req,res): Promise<any> => {
     })
 
     const memory = await createMemory(`${project.id}_${zreq.data?.name}` || "")
-    await indexGithubRepo(project.id,zreq.data?.githubUrl || '',memory.name || "", zreq.data?.githubToken || '')
+    const pipe = await createPipe(`${project.id}_${zreq.data?.name}` || "", memory.name || "")
+    const questionagent = await prismaClient.questionAgent.create({
+        data:{
+            memoryName: memory.name,
+            pipename: pipe.name,
+            pipeDescription: pipe.description,
+            projectId: project.id
+        }
+    })
+    
+    await indexGithubRepo(project.id,zreq.data?.githubUrl || '', questionagent.memoryName || "", zreq.data?.githubToken || '')
     await pollCommits(project.id)
     await pollPullRequests(project.id)
 
@@ -152,4 +167,34 @@ router.get("/:projectId/prs", async (req,res): Promise<any> => {
     res.json({message: 'Success',prs})
 })
 
-export const projectRouter = router
+
+// router.post("/:projectId/question", async (req,res):Promise<any> => {
+//     const zreq = questionScema.safeParse(req.body)
+//     const email = req.headers.authorization
+
+//     const user = await prismaClient.user.findUnique({
+//         where:{
+//             emailAddress: email
+//         }
+//     })
+
+//     if (!user?.id) {
+//         return res.status(401).json({ error: "Unauthorized" });
+//     }
+
+//     const answer = await 
+
+
+//     const project = await prismaClient.project.create({
+//         data:{
+//             name: zreq.data?.name || "",
+//             githubUrl: zreq.data?.githubUrl || "",
+//             userToProject: {
+//                 create:{
+//                     userId: user?.id
+//                 }
+//             }
+//         }
+//     })
+// })
+// export const projectRouter = router
