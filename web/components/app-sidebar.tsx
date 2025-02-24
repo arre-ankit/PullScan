@@ -20,10 +20,30 @@ import { PrComponent } from "./PR"
 import { useParams } from "next/navigation";
 import { Commit, PR } from "@/lib/types";
 import { CurrentItemContext } from "@/context/context";
-import { data } from "@/app/dashboard/projects/[...id]/page";
+import { GitCommitHorizontal, GitPullRequestArrow, MessageCircle } from "lucide-react"
 
-
-
+const data = {
+  navMain: [
+    {
+      title: "Commits",
+      icon: GitCommitHorizontal ,
+      isActive: false,
+      url: 'commits'
+    },
+    {
+      title: "PRs",
+      icon: GitPullRequestArrow,
+      isActive: false,
+      url: 'prs'
+    },
+    {
+      title: "Chat",
+      icon: MessageCircle,
+      isActive: true,
+      url: 'questions'
+    }
+  ]
+}
 
 interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
   commit: Commit[] | null

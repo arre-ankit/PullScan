@@ -26,7 +26,7 @@ import { Commit, NavItem, PR, Project } from "@/lib/types"
 import { ViewPR } from "@/components/ViewPR"
 
 
-export const data = {
+const data = {
   navMain: [
     {
       title: "Commits",
