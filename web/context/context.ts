@@ -1,4 +1,4 @@
-import { Commit, NavItem, PR } from "@/lib/types";
+import { Commit, NavItem, PR, Question } from "@/lib/types";
 import { createContext } from "react";
 
 interface CurrentCommitContextType {
@@ -17,8 +17,14 @@ interface CurrentItemContextType {
     setCurrentItem: (item: NavItem) => void
 }
 
+interface CurrentQuestionContextType{
+    currentQuestion: Question| undefined,
+    setCurrentQuestion: (question: Question) => void
+}
+
 export const CommitContext = createContext<Commit[] | undefined>(undefined);
 export const PRContext = createContext<PR[] | undefined>(undefined);
+export const QuestionContext = createContext<Question[] | undefined>(undefined);
 
 
 export const CurrentCommitContext = createContext<CurrentCommitContextType>({
@@ -29,6 +35,11 @@ export const CurrentCommitContext = createContext<CurrentCommitContextType>({
 export const CurrentPRContext = createContext<CurrentPRContextType>({
     currentPR: undefined,
     setCurrentPR: () => {}
+})
+
+export const CurrentQuestionContext = createContext<CurrentQuestionContextType>({
+    currentQuestion: undefined,
+    setCurrentQuestion: () => {}
 })
 
 export const CurrentItemContext = createContext<CurrentItemContextType>({

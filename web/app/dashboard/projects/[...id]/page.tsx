@@ -21,9 +21,11 @@ import { useParams, useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs"
 import SelectProjectToggle from "@/components/select-project-toggle"
 import { ViewCommit } from "@/components/ViewCommit"
-import { CommitContext, CurrentCommitContext, CurrentItemContext, CurrentPRContext, PRContext } from "@/context/context"
-import { Commit, NavItem, PR, Project } from "@/lib/types"
+import { CommitContext, CurrentCommitContext, CurrentItemContext, CurrentPRContext, CurrentQuestionContext, PRContext, QuestionContext } from "@/context/context"
+import { Commit, NavItem, PR, Project,Question } from "@/lib/types"
 import { ViewPR } from "@/components/ViewPR"
+import { ViewChat } from "@/components/ViewChat"
+import { ChatBox } from "@/components/QuestionComponent"
 
 
 const data = {
@@ -53,9 +55,11 @@ export default function Page() {
   const { id } = useParams(); // Get the project ID from the URL
   const [project,setProject] = useState<Project | null>(null)
   const [commits,setCommits] = useState<Commit[]>([])
+  const [questions,setQuestions] = useState<Question[]>([])
   const [currentCommit, setCurrentCommit] = useState<Commit | undefined>(undefined)
   const [currentPR, setCurrentPR] = useState<PR | undefined>(undefined)
   const [currentItem, setCurrentItem] = useState<NavItem | undefined>(data.navMain[0])
+  const [currentQuestion, setCurrentQuestion] = useState<Question | undefined>(undefined)
   const [prs,setprs] = useState<PR[]>([])
   const {user} = useUser();
   const email = user?.emailAddresses  
@@ -128,11 +132,13 @@ export default function Page() {
 
 
   return (
+    <CurrentQuestionContext.Provider value={{currentQuestion,setCurrentQuestion}}>
     <CurrentItemContext.Provider value={{currentItem,setCurrentItem}}>
     <CurrentPRContext.Provider value={{currentPR,setCurrentPR}}>
     <CurrentCommitContext.Provider value={{ currentCommit, setCurrentCommit }}>
     <CommitContext.Provider value={commits}>
     <PRContext.Provider value={prs}>
+    <QuestionContext.Provider value={questions}>
       <SidebarProvider
         style={
           {
@@ -163,16 +169,18 @@ export default function Page() {
             </div>
           </header>
           <div className="flex flex-1 flex-col gap-4 p-4">
-          {currentItem?.title === "Chat" }
+           {currentItem?.title === "Chat" && currentQuestion ? <ViewChat/> : <ChatBox projectId={id}/>}
             {currentItem?.title === "PRs" && <ViewPR/> }
             {currentItem?.title === "Commits" && <ViewCommit/>}
           </div>
         </SidebarInset>
       </SidebarProvider>
+    </QuestionContext.Provider>
     </PRContext.Provider>
     </CommitContext.Provider>
     </CurrentCommitContext.Provider>
     </CurrentPRContext.Provider>
     </CurrentItemContext.Provider>
+    </CurrentQuestionContext.Provider>
   )
 }

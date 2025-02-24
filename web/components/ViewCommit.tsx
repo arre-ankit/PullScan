@@ -5,7 +5,6 @@ import { Card } from "./ui/card"
 import { Separator } from "@radix-ui/react-separator"
 import { Clock,GitCommit } from "lucide-react"
 import Image from "next/image"
-import { ChatComponent } from "./Chat"
 
 export function ViewCommit() {
   const { currentCommit } = useContext(CurrentCommitContext)
@@ -86,9 +85,6 @@ export function ViewCommit() {
           </div>
         </div>
       </Card>
-      <div className="mt-6">
-      <ChatComponent/>
-      </div>
     </div>
   </div>
   )

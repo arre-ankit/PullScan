@@ -17,6 +17,12 @@ export interface PR {
     pullReqNumber: number
 }
 
+export interface Question {
+    id: string
+    question:string
+    answer:string              
+}
+
 export interface Project {
     id: string
     name: string

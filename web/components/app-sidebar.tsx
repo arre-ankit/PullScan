@@ -18,9 +18,10 @@ import { CommitComponent } from "./Commit"
 
 import { PrComponent } from "./PR"
 import { useParams } from "next/navigation";
-import { Commit, PR } from "@/lib/types";
+import { Commit, PR, Question } from "@/lib/types";
 import { CurrentItemContext } from "@/context/context";
 import { GitCommitHorizontal, GitPullRequestArrow, MessageCircle } from "lucide-react"
+import { QuestionComponent } from "./Chat";
 
 const data = {
   navMain: [
@@ -40,7 +41,7 @@ const data = {
       title: "Chat",
       icon: MessageCircle,
       isActive: true,
-      url: 'questions'
+      url: 'chats'
     }
   ]
 }
@@ -55,6 +56,7 @@ export function AppSidebar({commit, ...props }:AppSidebarProps) {
   const { id } = useParams(); // Get the project ID from the URL
   const [commits,setCommits] = React.useState<Commit[]>(commit || [])
   const [prs,setPRs] = React.useState<PR[]>([])
+  const [questions,setQuestions] = React.useState<Question[]>([])
   const { user } = useUser();
   const email = user?.emailAddresses 
   const { currentItem } = React.useContext(CurrentItemContext)
@@ -74,6 +76,7 @@ export function AppSidebar({commit, ...props }:AppSidebarProps) {
       const data = await response.json();
 
       if (item.title === "Chat") {
+        setQuestions(data.chats || []);
         
       } else if (item.title === "PRs") {
         setPRs(data.prs || []); // Set PRs for PRs
@@ -150,7 +153,7 @@ export function AppSidebar({commit, ...props }:AppSidebarProps) {
         <SidebarContent>
           <SidebarGroup className="px-0">
             <SidebarGroupContent>
-            {currentItem?.title === "Chat" }
+            {currentItem?.title === "Chat" && <QuestionComponent questions={questions}/>}
             {currentItem?.title === "PRs" && <PrComponent prs={prs}/> }
             {currentItem?.title === "Commits" && (
               <CommitComponent
