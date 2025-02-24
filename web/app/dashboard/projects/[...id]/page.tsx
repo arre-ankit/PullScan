@@ -9,7 +9,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
-import { Command,GitCommitHorizontal, GitPullRequestArrow, MessageCircle } from "lucide-react"
+import { GitCommitHorizontal, GitPullRequestArrow, MessageCircle } from "lucide-react"
 import { Separator } from "@/components/ui/separator"
 import {
   SidebarInset,

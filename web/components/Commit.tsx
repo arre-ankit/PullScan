@@ -2,7 +2,7 @@
 import Image from "next/image"
 import { Commit } from "@/lib/types";
 import { CurrentCommitContext } from "@/context/context";
-import { useContext, useState } from "react";
+import { useContext } from "react";
 
 interface CommitInterface {
   commits: Commit[]

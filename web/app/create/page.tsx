@@ -17,14 +17,14 @@ type FormInput = {
 export default function  CreatePage(){
     const { user } = useUser(); 
     const email = user?.emailAddresses[0]?.emailAddress; // Extract the email
-    const {register,handleSubmit,reset} = useForm<FormInput>()
+    const {register,handleSubmit} = useForm<FormInput>()
     const [loading, setloading] = useState(false);
     const router  = useRouter()
 
 
     async function onSubmit(data: FormInput) {
         setloading(true)
-        const res = await fetch('http://localhost:8080/v1/api/projects/create', { // Adjust the endpoint as necessary
+        await fetch('http://localhost:8080/v1/api/projects/create', { // Adjust the endpoint as necessary
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

@@ -3,7 +3,7 @@ import { useContext } from "react"
 import { CurrentCommitContext } from "@/context/context"
 import { Card } from "./ui/card"
 import { Separator } from "@radix-ui/react-separator"
-import { Clock, GitBranch, GitCommit, GitPullRequest } from "lucide-react"
+import { Clock,GitCommit } from "lucide-react"
 import Image from "next/image"
 import { ChatComponent } from "./Chat"
 

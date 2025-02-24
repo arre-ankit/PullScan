@@ -1,6 +1,6 @@
 "use client"
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Check, ChevronsUpDown } from "lucide-react"
 
 import { cn } from "@/lib/utils"
@@ -36,14 +36,14 @@ interface SelectProjectToggleProps {
   onProjectSelect: (projectId: string) => void;
 }
 
-const SelectProjectToggle:any = ({ onProjectSelect }:any) => {
+const SelectProjectToggle:any = ({ onProjectSelect }:SelectProjectToggleProps) => {
   const { user } = useUser();
   const email = user?.emailAddresses[0]?.emailAddress;
   const [open, setOpen] = React.useState(false);
   const [value, setValue] = React.useState("");
   const [projects, setProjects] = React.useState<Project[]>([]);
   const [isLoading, setIsLoading] = React.useState(false);
-  const { id } = useParams(); // Get the project ID from the URL
+  const [currentprojectName,setcurrentprojectName] = useState("Select project...")
 
   React.useEffect(() => {
     if (!email) return;
@@ -83,9 +83,7 @@ const SelectProjectToggle:any = ({ onProjectSelect }:any) => {
           aria-expanded={open}
           className="w-[180px] justify-between"
         >
-          {value
-            ? projects.find((project) => project.name === value)?.name || "Select project..."
-            : "Select project..."}
+          {currentprojectName}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
@@ -108,6 +106,7 @@ const SelectProjectToggle:any = ({ onProjectSelect }:any) => {
                       const selectedProject = projects.find(p => p.name === currentValue);
                       if (selectedProject) {
                         setValue(currentValue === value ? "" : currentValue);
+                        setcurrentprojectName(selectedProject.name)
                         onProjectSelect(selectedProject.id);
                       }
                       setOpen(false);

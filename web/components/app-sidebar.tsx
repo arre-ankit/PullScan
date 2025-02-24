@@ -1,7 +1,6 @@
 "use client"
 
 import * as React from "react"
-import { Command,GitCommitHorizontal, GitPullRequestArrow, MessageCircle } from "lucide-react"
 import {
   Sidebar,
   SidebarContent,
@@ -9,7 +8,6 @@ import {
   SidebarGroup,
   SidebarGroupContent,
   SidebarHeader,
-  SidebarInput,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -20,7 +18,7 @@ import { useUser } from '@clerk/clerk-react';
 import { CommitComponent } from "./Commit"
 
 import { PrComponent } from "./PR"
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { Commit, PR } from "@/lib/types";
 import { CurrentItemContext } from "@/context/context";
 import { data } from "@/app/dashboard/projects/[...id]/page";
@@ -38,10 +36,8 @@ export function AppSidebar({commit, ...props }:AppSidebarProps) {
   const { id } = useParams(); // Get the project ID from the URL
   const [commits,setCommits] = React.useState<Commit[]>(commit || [])
   const [prs,setPRs] = React.useState<PR[]>([])
-  const { setOpen } = useSidebar()
   const { user } = useUser();
   const email = user?.emailAddresses 
-  const [selectedCommit, setSelectedCommit] = React.useState<Commit | null>(null);
   const { currentItem } = React.useContext(CurrentItemContext)
   const {setCurrentItem} =  React.useContext(CurrentItemContext)
 

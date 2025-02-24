@@ -14,7 +14,7 @@ export function PrComponent({prs}:any) {
 
   return (
     <>
-    {prs.map((pr:any) => (
+    {prs.map((pr:PR) => (
         <div key={`${pr.pullReqDate}-${pr.pullReqMessage}`}>
             <a
                 href="#"

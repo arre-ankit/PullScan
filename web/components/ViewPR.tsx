@@ -4,7 +4,7 @@ import { CurrentPRContext } from "@/context/context"
 import { Card } from "./ui/card"
 import Image from "next/image"
 import { Separator } from "@radix-ui/react-separator"
-import { Clock, GitBranch, GitCommit, GitPullRequest } from "lucide-react"
+import { Clock, GitPullRequest } from "lucide-react"
 import { ChatComponent } from "./Chat"
 
 export function ViewPR() {
