@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Button } from "./ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Textarea } from "@/components/ui/textarea"
-import { useUser } from "@clerk/nextjs";
 
 interface Prop {
     projectId: string | string[]|undefined
@@ -11,7 +10,6 @@ interface Prop {
 export function ChatBox({projectId}:Prop) {
     const [question,setQuestion] = useState('')
     const [loading,setloading] = useState(false)
-    const { user } = useUser();
 
 
     const handleQuestion = async (question:string) => {

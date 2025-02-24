@@ -1,16 +1,12 @@
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import { Card } from "./ui/card";
 import { useParams } from "next/navigation";
-import { useUser } from "@clerk/nextjs";
 import { CurrentQuestionContext } from "@/context/context";
 import { Separator } from "@radix-ui/react-separator";
 import { ChatBox } from "./QuestionComponent";
 
 export function ViewChat() {
-    const [question,setQuestion] = useState('')
-    const [loading,setloading] = useState(false)
     const {projectId} = useParams()
-    const { user } = useUser();
     const { currentQuestion } = useContext(CurrentQuestionContext)
 
     if (!currentQuestion) {
@@ -54,7 +50,7 @@ export function ViewChat() {
         </div>
       </Card>
       <div className="mt-6">
-      <ChatBox />
+      <ChatBox projectId={projectId}/>
       </div>
     </div>
   </div>

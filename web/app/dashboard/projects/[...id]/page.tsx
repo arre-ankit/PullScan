@@ -123,9 +123,26 @@ export default function Page() {
         }
       }
 
+      const fetchQuestions = async () => {
+        try {
+          const response = await fetch(`http://localhost:8080/v1/api/projects/${id}/chats`,{
+            headers:{
+              'Authorization': `${email}`
+            }
+          })
+          const data = await response.json();
+          setQuestions(data.chats)
+        }
+        catch (error) {
+          console.error("Error fetching project details:", error);
+          setQuestions([])
+        }
+      }
+
       fetchProjectDetails();
       fetchCommits();
       fetchPRs();
+      fetchQuestions();
 
     }, [id]);
 
