@@ -20,9 +20,11 @@ jobs:
         echo "$SSH_PRIVATE_KEY" > keyfile
         chmod 600 keyfile
         mkdir -p ~/.ssh
-        cp known_hosts ~/.ssh/known_hosts
+        chmod 700 ~/.ssh
+        ssh-keyscan ec2-3-110-45-72.ap-south-1.compute.amazonaws.com >> ~/.ssh/known_hosts
+
 
         if ! command -v pm2 &> /dev/null; then
           echo "PM2 not found, installing..."
           npm install -g pm2
-        sh -t -i keyfile ubuntu@ec2-3-110-45-72.ap-south-1.compute.amazonaws.com "sudo bash ~/deploy.sh"
+        ssh -t -i keyfile ubuntu@ec2-3-110-45-72.ap-south-1.compute.amazonaws.com "sudo bash ~/deploy.sh"
