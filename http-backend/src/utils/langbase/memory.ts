@@ -13,7 +13,7 @@ export async function listMemory() {
 		method: 'GET',
 		headers: {
 			'Content-Type': 'application/json',
-			Authorization: `Bearer user_5Vyz4Aey8gYW4j4Miend5AtNAEjXSQ13RrZZfE8NPwctWcxzmwmpo8L6d2ma26829otSyZakSEXWYePHuoN8Zfg`,
+			Authorization: `Bearer ${apiKey}`,
 		},
 	});
 
