@@ -19,4 +19,5 @@ jobs:
       run: |
         echo "$SSH_PRIVATE_KEY" > keyfile
         chmod 600 keyfile 
+        ssh-keyscan ec2-3-110-45-72.ap-south-1.compute.amazonaws.com >> ~/.ssh/known_hosts
         ssh -t -i keyfile ubuntu@ec2-3-110-45-72.ap-south-1.compute.amazonaws.com "sudo bash ~/deploy.sh"
