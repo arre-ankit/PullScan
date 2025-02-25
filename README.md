@@ -1,6 +1,3 @@
-![image](https://github.com/user-attachments/assets/d85a4b3c-f28f-4134-9d85-d2e03987e5de)
-
-
 # PULLSCAN
 Passionate about empowering open source contributions and learning? Help us build the ultimate AI platform to help beginners to understard codebases.
 
@@ -27,6 +24,8 @@ Unlock a seamless development experience with AI-powered PR and commit insights!
 
 
 ## What's under the hood?
+![diagram-export-2-26-2025-2_31_52-AM](https://github.com/user-attachments/assets/29776e3c-f428-41ca-aa67-d723333b2f0d)
+
 #### `web`: The main web UI.
 
 Built with:
