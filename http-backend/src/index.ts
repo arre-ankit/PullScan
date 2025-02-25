@@ -2,6 +2,7 @@ import express from 'express'
 import cors from 'cors'
 import { projectRouter } from './router/project';
 import { prismaClient } from './db';
+import { backgroundRouter } from './router/background';
 
 const app = express();
 app.use(cors({
@@ -17,6 +18,7 @@ app.get('/', (req, res) => {
 });
 
 app.use('/v1/api/projects',projectRouter)
+app.use('/v1/api/background',backgroundRouter)
 
 app.get('/v1/api/commit/:commitId', async (req,res):Promise<any> => {
     const email = req.headers.authorization

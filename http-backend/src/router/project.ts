@@ -6,6 +6,7 @@ import { pollCommits } from "../utils/github/commit";
 import { pollPullRequests } from "../utils/github/pull-req";
 import { createMemory } from "../utils/langbase/memory";
 import { createPipe, streamLangbaseResponse } from "../utils/langbase/pipe";
+import { qstashClient } from "../queues/githubQueue";
 
 
 const projectScema = z.object({
@@ -67,7 +68,18 @@ router.post("/create", async (req,res): Promise<any> => {
         }
     })
     
-    await indexGithubRepo(project.id,zreq.data?.githubUrl || '', questionagent.memoryName || "", zreq.data?.githubToken || '')
+      // Enqueue the GitHub indexing job – this runs in the background.
+      await qstashClient.publishJSON({
+        url: `http://localhost:4000/v1/api/background/index-github`,
+        body: {
+          projectId: project.id,
+          githubUrl: zreq.data?.githubUrl || '',
+          memoryName: questionagent.memoryName || "",
+          githubToken: zreq.data?.githubToken || ''
+        }
+      });
+    
+
     await pollCommits(project.id)
     await pollPullRequests(project.id)
 

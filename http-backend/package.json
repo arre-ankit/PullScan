@@ -21,6 +21,8 @@
     "@prisma/client": "^6.4.0",
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
+    "@upstash/qstash": "^2.7.22",
+    "@upstash/queue": "^1.0.1",
     "ai": "^4.1.45",
     "axios": "^1.7.9",
     "cors": "^2.8.5",
