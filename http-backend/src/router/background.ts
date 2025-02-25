@@ -1,5 +1,4 @@
 import { Router } from "express";
-import { qstashClient } from "../queues/githubQueue";
 import { indexGithubRepo } from "../utils/github/github-loader";
 
 const router = Router();

@@ -28,15 +28,14 @@ export const loadGithubRepo = async (githubUrl: string, githubToken?: string) =>
 export const indexGithubRepo = async (projectId :string, githubUrl:string, name:string, githubToken?:string) => {
     const docs = await loadGithubRepo(githubUrl, githubToken)
     let i = 0;
-    // for (const doc of docs) {
-    //     console.log(`Doc uploading ${i}`)
-    //     i++;
-    //     console.log(doc?.metadata?.source)
-    //     console.log(typeof(doc.pageContent))
-    //     await uploadMemoryDocument(name, (doc.pageContent) as string, (doc?.metadata?.source)as string)
-    // }
-    console.log(`Doc uploading ${i}`)
-    await uploadMemoryDocument(name, (docs[2].pageContent) as string, (docs[2]?.metadata?.source)as string)
+    for (const doc of docs) {
+        console.log(`Doc uploading ${i}`)
+        i++;
+        console.log(doc?.metadata?.source)
+        console.log(typeof(doc.pageContent))
+        await uploadMemoryDocument(name, (doc.pageContent) as string, (doc?.metadata?.source)as string)
+    }
+
     
 }
 
