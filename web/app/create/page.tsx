@@ -58,7 +58,7 @@ export default function  CreatePage(){
         <div className="flex justify-center items-center min-h-screen">
             <div>
                 <div>
-                    <h1 className="font-semibold text-2xl">
+                    <h1 className="font-semibold text-3xl">
                         Link Your Github Repo
                     </h1>
                     <p className="text-sm text-muted-foreground">
@@ -72,9 +72,12 @@ export default function  CreatePage(){
                         <div className="h-2"></div>
                         <Input {...register('repoUrl', {required:true})} required placeholder="Github URL"/>
                         <div className="h-2"></div>
-                        <Input {...register('githubToken')} placeholder="Github Token (Optional)"/>
+                        <Input {...register('githubToken')} required placeholder="Github Token"/>
                         <div className="h-4"></div>
-                        <Button type="submit" disabled={loading}>Create Project</Button>
+                        <p className="text-sm text-muted-foreground">
+                            Need a token? <a href="https://github.com/settings/tokens" target="_blank" rel="noopener noreferrer" className="text-blue-500 underline">Visit this link</a> to create one.
+                        </p>
+                        <Button type="submit" disabled={loading} className="mt-2">Create Project</Button>
                     </form>
                 </div>
             </div>
