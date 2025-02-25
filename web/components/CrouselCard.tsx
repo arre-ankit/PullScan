@@ -1,6 +1,6 @@
 "use client";
 
-import { Book, BookOpen, Box, GitCommit, GitPullRequest, Globe, Lock, Search, Settings, Sparkles } from "lucide-react";
+import { BookOpen, Box, GitCommit, GitPullRequest, Globe, Sparkles } from "lucide-react";
 import { GlowingEffect } from "@/components/ui/glowing-effect";
 
 export function CrouselCard() {
