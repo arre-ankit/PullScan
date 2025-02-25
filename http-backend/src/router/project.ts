@@ -1,7 +1,6 @@
 import { Router } from "express";
 import { z } from "zod"
 import {prismaClient} from "../db/index"
-import { indexGithubRepo } from "../utils/github/github-loader";
 import { pollCommits } from "../utils/github/commit";
 import { pollPullRequests } from "../utils/github/pull-req";
 import { createMemory } from "../utils/langbase/memory";
