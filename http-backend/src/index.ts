@@ -6,8 +6,10 @@ import { prismaClient } from './db';
 const app = express();
 app.use(express.json())
 app.use(cors({
-    origin: '*'
-}));
+    origin: '*',
+    methods: ['GET', 'POST'],
+    allowedHeaders: ['Content-Type']
+  }));
 
 app.get('/', (req, res) => {
     res.send('Hello');

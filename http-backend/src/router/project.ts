@@ -34,44 +34,45 @@ router.post("/create", async (req,res): Promise<any> => {
         return res.status(401).json({ error: "Unauthorized" });
     }
 
-    const isproject = await prismaClient.project.findUnique({
-        where:{
-            name: zreq.data?.name
-        }
-    })
+    // const isproject = await prismaClient.project.findUnique({
+    //     where:{
+    //         name: zreq.data?.name
+    //     }
+    // })
 
-    if(isproject){
-        return  res.status(401).json({ error: "Project already Exist" });
-    }
+    // if(isproject){
+    //     return  res.status(401).json({ error: "Project already Exist" });
+    // }
 
-    const project = await prismaClient.project.create({
-        data:{
-            name: zreq.data?.name || "",
-            githubUrl: zreq.data?.githubUrl || "",
-            userToProject: {
-                create:{
-                    userId: user?.id
-                }
-            }
-        }
-    })
+    // const project = await prismaClient.project.create({
+    //     data:{
+    //         name: zreq.data?.name || "",
+    //         githubUrl: zreq.data?.githubUrl || "",
+    //         userToProject: {
+    //             create:{
+    //                 userId: user?.id
+    //             }
+    //         }
+    //     }
+    // })
 
-    const memory = await createMemory(`${project.id}_${zreq.data?.name}` || "")
-    const pipe = await createPipe(`${project.id}_${zreq.data?.name}` || "", memory.name || "")
-    const questionagent = await prismaClient.questionAgent.create({
-        data:{
-            memoryName: memory.name,
-            pipename: pipe.name,
-            pipeDescription: pipe.description,
-            projectId: project.id
-        }
-    })
+    // const memory = await createMemory(`${project.id}_${zreq.data?.name}` || "")
+    // const pipe = await createPipe(`${project.id}_${zreq.data?.name}` || "", memory.name || "")
+    // const questionagent = await prismaClient.questionAgent.create({
+    //     data:{
+    //         memoryName: memory.name,
+    //         pipename: pipe.name,
+    //         pipeDescription: pipe.description,
+    //         projectId: project.id
+    //     }
+    // })
     
-    await indexGithubRepo(project.id,zreq.data?.githubUrl || '', questionagent.memoryName || "", zreq.data?.githubToken || '')
-    await pollCommits(project.id)
-    await pollPullRequests(project.id)
+    // await indexGithubRepo(project.id,zreq.data?.githubUrl || '', questionagent.memoryName || "", zreq.data?.githubToken || '')
+    // await pollCommits(project.id)
+    // await pollPullRequests(project.id)
 
-    res.json({message: 'Success',project})
+    //res.json({message: 'Success',project})
+    res.json({message: 'Success'})
 })
 
 
