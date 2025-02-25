@@ -1,101 +1,116 @@
+"use client";
+
+import { useEffect, useRef } from "react";
+import { Button } from "@/components/ui/button";
 import Image from "next/image";
+import { CrouselCard } from "@/components/CrouselCard";
+import { PricingDemo } from "@/components/Pricing";
+
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const scrollRef = useRef<HTMLDivElement>(null);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
+  useEffect(() => {
+    const scroll = scrollRef.current;
+    if (!scroll) return;
+
+    let animationFrameId: number;
+    let position = 0;
+
+    const animate = () => {
+      // Reduced speed from 0.5 to 0.15 for slower scrolling
+      position -= 0.02;
+      if (position <= -50) position = 0;
+      if (scroll) scroll.style.transform = `translateX(${position}%)`;
+      animationFrameId = requestAnimationFrame(animate);
+    };
+
+    animationFrameId = requestAnimationFrame(animate);
+
+    return () => {
+      cancelAnimationFrame(animationFrameId);
+    };
+  }, []);
+
+  return (
+    <main>
+      <section className="flex flex-col items-center justify-center h-[55vh] md:h-[65vh] overflow-hidden relative">
+        <div className="flex flex-col items-center space-y-4 md:space-y-6 w-full px-6 md:px-0">
+          <div className="max-w-6xl">
+            <h1 className="text-3xl md:text-6xl font-semibold text-center">
+              <div className="tracking-tight">
+                <div className="block">
+                  <div className="md:text-5xl leading-tight">
+                    Know about a {" "}
+                    <span className="bg-gradient-to-r from-orange-500 via-orange-300 to-orange-500 text-transparent bg-clip-text">
+                      Codebase
+                    </span>{" "}
+                    with<br />
+                    <span className="bg-gradient-to-r from-orange-500 via-orange-300 to-orange-500 text-transparent bg-clip-text">
+                    Pull Request,Commit Summaries & Chat
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </h1>
+          </div>
+          
+          <p className="max-w-2xl mx-auto text-sm font-light text-center md:text-lg w-[90%]">
+          AI-Powered  {" "}
+            <span className="bg-gradient-to-r from-orange-500 via-orange-300 to-orange-500 text-transparent bg-clip-text font-medium">
+            PR & Commit Summaries {" "}
+            </span>
+            to Understand Any Codebase Instantly with {" "}
+            <span className="bg-gradient-to-r from-orange-500 via-orange-300 to-orange-500 text-transparent bg-clip-text font-medium">
+            RAG Chat for Smarter Answers.
+            </span>
+          </p>
+
+          <a 
+            href="/create" 
+            target="_blank" 
             rel="noopener noreferrer"
+            className="w-[90%] max-w-md md:w-auto"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
+            <Button 
+              className="w-full md:w-auto px-6 py-3.5 text-base font-medium rounded-full bg-gradient-to-b from-[#7A1000] to-[#FE9D00] hover:from-[#a09292] hover:to-[#b3822e] shadow-[0px_0px_12px_#A92000] relative"
+            >
+              <div className="absolute inset-0">
+                <div className="rounded-full absolute inset-0 border border-white/20 [mask-image:linear-gradient(to_bottom,black,transparent)]" />
+                <div className="rounded-full absolute inset-0 border border-white/40 [mask-image:linear-gradient(to_top,black,transparent)]" />
+                <div className="absolute inset-0 shadow-[0_0_10px_rgba(169,32,0,0.7)_inset] rounded-full" />
+              </div>
+              <span className="relative">TRY NOW</span>
+            </Button>
           </a>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+      </section>
+  
+      <section className="mt-4 md:flex md:mt-0 items-center hidden justify-center">
+        <div className="w-[50%] md:w-[80%] items-center flex justify-center">
+          <div className="flex flex-col items-center gap-3 md:gap-5 p-24 md:p-6 border rounded-xl border-white/20">
+            <div className="flex flex-col gap-3 md:gap-5 md:flex-row">
+              <div className="relative border rounded-xl border-white/20">
+                <Image
+                  src="/hero.png"
+                  alt={`Marketing Image`}
+                  className="flex md:py-10 md:px-10 overflow-hidden md:bg-gradient-to-b from-[#7A1000] to-[#FE9D00] md:rounded-lg md:[mask-image:linear-gradient(to_right,transparent,black_20%,black_80%,transparent)]"
+                  width={200000000000}
+                  height={20000000000}
+                  />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="py-4 px-12 md:py-64 md:px-48 flex justify-center items-center">
+        <CrouselCard />
+      </section>
+
+      <section className="py-4 px-12 md:py-1 md:px-48 flex justify-center items-center">
+        <PricingDemo/>
+      </section>
+    </main>
   );
 }
