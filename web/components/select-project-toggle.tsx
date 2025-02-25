@@ -50,7 +50,7 @@ const SelectProjectToggle:any = ({ onProjectSelect }:SelectProjectToggleProps) =
     const fetchProjects = async () => {
       setIsLoading(true);
       try {
-        const response = await fetch(`http://ec2-3-110-45-72.ap-south-1.compute.amazonaws.com:8080/v1/api/projects`, {
+        const response = await fetch(`https://pullscan.onrender.com/v1/api/projects`, {
           headers: {
             'Authorization': email
           }
