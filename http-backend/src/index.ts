@@ -40,4 +40,6 @@ app.get('/v1/api/commit/:commitId', async (req,res):Promise<any> => {
 
 })
 
-app.listen(8080);
+app.listen(4000);
+
+export default app
