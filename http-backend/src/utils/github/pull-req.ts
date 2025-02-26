@@ -121,4 +121,4 @@ async function summarizePR(githubUrl: string, pullReqHashes: string, pr_number:n
     
 // }
 
-// main()
+// main();

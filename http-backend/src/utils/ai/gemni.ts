@@ -1,7 +1,7 @@
 import {GoogleGenerativeAI} from "@google/generative-ai"
-import { Document } from "@langchain/core/documents"
 import { commit_main_summary_prompt, pr_summary_prompt } from "../prompt"
-
+import fs from 'fs'; // Add this import at the top
+import {summary_pr_mistral} from "./mistral"
 
 export interface CodeChange {
     filename: string;
@@ -27,67 +27,35 @@ export const aisummariseCommit = async (diff: string,commitMessage:string) => {
 }
 
 export const aisummarisePR = async (codes:CodeChange[],pullReqTitle: string, pullReqMessage:string) => {
-    const full_code:string = codes.map((code) => code.patch + code.filename).join('\n');
+    const full_code:string = codes.map((code) => code.patch + code.filename).join('');
 
-    // const pr_prompt = pr_summary_prompt({
-    //         title:pullReqTitle, 
-    //         description:pullReqMessage,
-    //         file_diff:full_code
-    //    })
+    const system_prompt =  pr_summary_prompt({
+        title:pullReqTitle, 
+        description:pullReqMessage,
+        file_diff:full_code
+   })
+   const prompt = 'Summerise this PR'
 
-    // const prompt: MessageParam[] = [{
-    //     role: 'user',
-    //     content: `${pr_prompt}`
-    // }]
+    const main = await summary_pr_mistral(system_prompt,prompt)
+    return main
+    
+    // fs.writeFileSync(`'full_code_${i}.txt'`, full_code, 'utf8'); // Add this line to save the code
+    // i++;
+    // console.log("Title:", pullReqTitle)
+    // fs.writeFileSync(`'title_${i}.txt'`, pullReqTitle, 'utf8'); // Add this line to save the code
+    
+    // console.log("Description:",pullReqMessage)
+    // fs.writeFileSync(`'description_${i}.txt'`, pullReqMessage, 'utf8'); // Add this line to save the code
+    // console.log('code',full_code)
 
-    // const main_summary = await generateCompletionClaude(prompt)
-
-    const main_summary = await  await model.generateContent([
-        pr_summary_prompt({
-                    title:pullReqTitle, 
-                    description:pullReqMessage,
-                    file_diff:full_code
-               })
-        ])
+    // const main_summary = await model.generateContent([
+    //     pr_summary_prompt({
+    //                 title:pullReqTitle, 
+    //                 description:pullReqMessage,
+    //                 file_diff:full_code
+    //            })
+    //     ])
 
 
-    return main_summary.response.text()
+    //return main_summary.response.text()
 }
-
-
-
-// This summarize code generate summary for the RAG 
-export const summarizecode = async (doc:Document) => {
-    console.log("getting summary for",doc.metadata.source);
-    try{
-        const code = doc.pageContent.slice(0,10000);
-        const response = await model.generateContent([
-            `You are an inteligen software engineer who specialize in onboarding junior software engineers on the project
-            You are onboaring juniors software engineer and explaing to them the purpose of the ${doc.metadata.source} file
-
-            Here is the code:
-            --------
-            ${code}
-            --------
-            Give a summary no more than 100 words of the code above`
-
-        ])
-
-        return response.response.text()
-
-    }catch(error){
-        return ''
-    }
-
-}
-
-export async function aigenerateEmbedding(summary:string) {
-    const model = genAI.getGenerativeModel({
-        model: "text-embedding-004"
-    })
-
-    const result = await model.embedContent(summary)
-    const embedding = result.embedding
-    return embedding.values
-}
-

@@ -67,7 +67,7 @@ router.post("/create", async (req,res): Promise<any> => {
         }
     })
     
-      // Enqueue the GitHub indexing job – this runs in the background.
+      //Enqueue the GitHub indexing job – this runs in the background.
       await qstashClient.publishJSON({
         url: `https://pullscan.onrender.com/v1/api/background/index-github`,
         body: {
