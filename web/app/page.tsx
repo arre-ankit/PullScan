@@ -68,7 +68,6 @@ export default function Home() {
 
           <a 
             href="/create" 
-            target="_blank" 
             rel="noopener noreferrer"
             className="w-[90%] max-w-md md:w-auto"
           >
