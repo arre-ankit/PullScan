@@ -1,6 +1,5 @@
 'use server'
 import {z} from 'zod'
-import { redirect } from 'next/navigation'
 import { currentUser } from '@clerk/nextjs/server'
 
 export async function createProject(prevState: {pending: boolean, message: string},formData: FormData) {
@@ -29,7 +28,7 @@ export async function createProject(prevState: {pending: boolean, message: strin
     const data = parse.data
 
     try{
-        const response = await fetch('https://pullscan.onrender.com/v1/api/projects/create', { 
+        const response = await fetch('http://pullscan.onrender.com/v1/api/projects/create', { 
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
