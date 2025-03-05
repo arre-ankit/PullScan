@@ -129,4 +129,4 @@ model QuestionAgent {
     memoryName                  String
     projectId                   String @unique
     project                     Project @relation(fields: [projectId], references: [id])
-  } 
+} 

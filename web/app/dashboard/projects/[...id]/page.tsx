@@ -76,7 +76,7 @@ export default function Page() {
 
       const fetchProjectDetails = async () => {
         try {
-          const response = await fetch(`https://pullscan.onrender.com/v1/api/projects/${id}`, {
+          const response = await fetch(`http://localhost:4000/v1/api/projects/${id}`, {
             headers: {
               'Authorization': `${email}`
             }
@@ -93,7 +93,7 @@ export default function Page() {
 
       const fetchCommits = async () => {
         try {
-          const response = await fetch(`https://pullscan.onrender.com/v1/api/projects/${id}/commits`,{
+          const response = await fetch(`http://localhost:4000/v1/api/projects/${id}/commits`,{
             headers:{
               'Authorization': `${email}`
             }
@@ -109,7 +109,7 @@ export default function Page() {
 
       const fetchPRs = async () => {
         try {
-          const response = await fetch(`https://pullscan.onrender.com/v1/api/projects/${id}/prs`,{
+          const response = await fetch(`http://localhost:4000/v1/api/projects/${id}/prs`,{
             headers:{
               'Authorization': `${email}`
             }
@@ -125,7 +125,7 @@ export default function Page() {
 
       const fetchQuestions = async () => {
         try {
-          const response = await fetch(`https://pullscan.onrender.com/v1/api/projects/${id}/chats`,{
+          const response = await fetch(`http://localhost:4000/v1/api/projects/${id}/chats`,{
             headers:{
               'Authorization': `${email}`
             }

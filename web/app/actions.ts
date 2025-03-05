@@ -74,4 +74,3 @@ export async function createProject(prevState: {pending: boolean, message: strin
         return { pending: false, message: "An error occurred",error };
     }
 }
-
