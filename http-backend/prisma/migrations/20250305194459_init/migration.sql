@@ -71,6 +71,7 @@ CREATE TABLE "Pr" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "projectId" TEXT NOT NULL,
+    "pullReqNumber" INTEGER NOT NULL,
     "pullReqTitle" TEXT NOT NULL,
     "pullReqMessage" TEXT NOT NULL,
     "pullReqHash" TEXT NOT NULL,
@@ -83,22 +84,29 @@ CREATE TABLE "Pr" (
 );
 
 -- CreateTable
-CREATE TABLE "SourceCodeEmbedding" (
+CREATE TABLE "QuestionAgent" (
     "id" TEXT NOT NULL,
-    "summaryEmbedding" DOUBLE PRECISION[],
-    "sourceCode" TEXT NOT NULL,
-    "fileName" TEXT NOT NULL,
-    "summary" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "pipename" TEXT NOT NULL,
+    "pipeDescription" TEXT NOT NULL,
+    "memoryName" TEXT NOT NULL,
     "projectId" TEXT NOT NULL,
 
-    CONSTRAINT "SourceCodeEmbedding_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "QuestionAgent_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
 CREATE UNIQUE INDEX "User_emailAddress_key" ON "User"("emailAddress");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "Project_name_key" ON "Project"("name");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "UserToProject_userId_projectId_key" ON "UserToProject"("userId", "projectId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "QuestionAgent_projectId_key" ON "QuestionAgent"("projectId");
 
 -- AddForeignKey
 ALTER TABLE "UserToProject" ADD CONSTRAINT "UserToProject_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -119,4 +127,4 @@ ALTER TABLE "Commit" ADD CONSTRAINT "Commit_projectId_fkey" FOREIGN KEY ("projec
 ALTER TABLE "Pr" ADD CONSTRAINT "Pr_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES "Project"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "SourceCodeEmbedding" ADD CONSTRAINT "SourceCodeEmbedding_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES "Project"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "QuestionAgent" ADD CONSTRAINT "QuestionAgent_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES "Project"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

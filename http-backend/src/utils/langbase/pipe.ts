@@ -70,8 +70,7 @@ export async function streamLangbaseResponse(prompt: string, res: Response, opti
             data: {
                 project: { connect: { id: options.projectId } },
                 question: options.prompt,
-                answer: completeAnswer,
-                user: { connect: { id: options.userId } }
+                answer: completeAnswer
             }
         });
       
