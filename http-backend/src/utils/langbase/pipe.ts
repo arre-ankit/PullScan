@@ -35,10 +35,10 @@ export async function streamLangbaseResponse(prompt: string, res: Response, opti
     const langbase = new Langbase({
       apiKey: process.env.LANGBASE_API_KEY!,
     });
-  
+
     // Store the complete answer for saving later
     let completeAnswer = '';
-  
+
     // Run the pipe
     const { stream } = await langbase.pipe.run({
 		name: options.pipeName,
@@ -50,19 +50,19 @@ export async function streamLangbaseResponse(prompt: string, res: Response, opti
 			},
 		],
 	});
-  
+
     // Set up the runner to handle the stream
     const runner = getRunner(stream);
-    
+
     // Handle content chunks
     runner.on('content', content => {
       // Send chunk to client
       res.write(`data: ${JSON.stringify({ content })}\n\n`);
-      
+
       // Accumulate the complete answer
       completeAnswer += content;
     });
-  
+
     // Handle stream end
     runner.on('end', async () => {
       // Save the complete answer to the database
@@ -70,15 +70,16 @@ export async function streamLangbaseResponse(prompt: string, res: Response, opti
             data: {
                 project: { connect: { id: options.projectId } },
                 question: options.prompt,
-                answer: completeAnswer
+                answer: completeAnswer,
+                user: { connect: { id: options.userId } }
             }
         });
-      
+
     //   // End the response
       res.write(`data: ${JSON.stringify({ done: true })}\n\n`);
       res.end();
     });
-  
+
     // Handle errors
     runner.on('error', error => {
       console.error("Streaming error:", error);
@@ -127,5 +128,3 @@ export async function streamLangbaseResponse(prompt: string, res: Response, opti
 //     //createPipe('ccb6b329-a7fd-45af-81f5-64f9bd80763a_GENSTACK Final','ccb6b329-a7fd-45af-81f5-64f9bd80763a-gen-stack-final')
 //     callpipe('ccb6b329-a7fd-45af-81f5-64f9bd80763a-genstack-final','WHat is this repo about')
 // }
-
-// main();
